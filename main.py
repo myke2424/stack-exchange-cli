@@ -21,15 +21,21 @@ class StackExchange:
         return resp.json()
 
     def search(self, query, site="stackoverflow"):
-        params={"q": query, "accepted": True, "site": site}
-        print(f"Params: {params}")
+        params = {"q": query, "accepted": True, "site": site, "filter": "withbody"}
         resp = self._make_request(endpoint="/search/advanced", params=params)
-        answer_ids = [item["accepted_answer_id"] for item in resp["items"]]
-        answers = self._make_request("/answers", params={"answers_ids": answer_ids, "site": site})
-        print()
 
+        res = resp['items'][0]
+        print(res['title'], '\n')
+        print(res['body'])
+
+        answer_id = res['accepted_answer_id']
+
+        answer = self._make_request(f"/answers/{answer_id}", params={"site": site,
+                                                                     "filter": "withbody"})
+
+        print("***ANSWER*** \n")
+        print(answer['items'][0]['body'])
 
 
 client = StackExchange()
-resp = client.search("How to traverse file directory rust")
-print("DONE!")
+resp = client.search("Reverse linked list")
