@@ -1,12 +1,24 @@
 import requests
+import toml
 
-client_id = "23685"
-
-# SECRET
-client_secret = "7DI9bW2I4WM3YoMhaTSW9A(("
-
+with open('config.toml') as f:
+    config = toml.load(f)
 # use for requests
-api_key = "F2wA5L2NXwhEWWlTomEt)Q(("
+
+from rich.console import Console
+from rich.markdown import Markdown
+
+console = Console()
+
+
+# Proxy design pattern, potential!
+class CachedStackExchangeProxy:
+    def __init__(self, stack_exchange_service):
+        self.service = stack_exchange_service
+
+    def search(self, query, site="stackoverflow"):
+        # Check if request is in the DB!?. Since using redis, maybe hash the query and site?
+        self.service.search(query, site)
 
 
 class StackExchange:
@@ -25,8 +37,9 @@ class StackExchange:
         resp = self._make_request(endpoint="/search/advanced", params=params)
 
         res = resp['items'][0]
-        print(res['title'], '\n')
-        print(res['body'])
+        print(f"****** {res['title']} ******")
+        question = res['body']
+        console.print(question)
 
         answer_id = res['accepted_answer_id']
 
@@ -34,7 +47,8 @@ class StackExchange:
                                                                      "filter": "withbody"})
 
         print("***ANSWER*** \n")
-        print(answer['items'][0]['body'])
+        a = answer['items'][0]['body']
+        console.print(a)
 
 
 client = StackExchange()
