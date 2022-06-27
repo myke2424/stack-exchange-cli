@@ -28,7 +28,7 @@ class RedisCache(Cache):
             pass
         return value
 
-    def set(self, key, value) -> None:
+    def set(self, key, value):
         # if value is json, serialize it to a json string
         if isinstance(value, (dict, list)):
             value = json.dumps(value)

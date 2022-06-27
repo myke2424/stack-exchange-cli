@@ -7,6 +7,7 @@ from dataclasses import dataclass
 from .errors import StackRequestError, ZeroSearchResultsError
 from typing import Optional, List
 from abc import ABC, abstractmethod
+from cache import Cache
 
 
 @dataclass(frozen=True)
@@ -25,12 +26,6 @@ class SearchResult:
                    creation_date=r['creation_date'], score=r['score'])
 
 
-class Searchable(ABC):
-    @abstractmethod
-    def search(self) -> SearchResult:
-        pass
-
-
 # Impelement searchable!?
 class StackExchange:
     """
@@ -39,6 +34,7 @@ class StackExchange:
     """
 
     SEARCH_ENDPOINT = "/search/advanced"
+
 
     def __init__(self, version: str = "2.3") -> None:
         self.__version = version
@@ -84,13 +80,18 @@ class StackExchange:
 
         return search_result
 
-        # res = resp['items'][0]
-        # print(res['title'])
-    #  question = res['body']
-    # console.print(strip_tags(question))
-    #
 
-    #
-    # print("***ANSWER*** \n")
-    # a = answer['items'][0]['body']
-    # # console.print(strip_tags(a))
+class CachedStackExchange:
+    """ Proxy design pattern. Use a cache as a proxy object to set and get search results for faster look up time. """
+
+    def __init__(self, stack_exchange_service: StackExchange, cache: Cache) -> None:
+        self.cache = cache
+        self.service = stack_exchange_service
+
+    def search(self, query, site="stackoverflow"):
+        if self.cache.get(query) is not None:
+            return self.cache[query]
+        # Check if request is in the DB!?. Since using redis, maybe hash the query and site?
+        self.service.search(query, site)
+
+
