@@ -1,0 +1,23 @@
+title = "StackExchange Configuration"
+
+[owner]
+name = "Foo Bar"
+
+# These are optional fields, if you don't provide stack exchange API credentials,
+# the number of requests will be throttled. Read more here: https://api.stackexchange.com/docs
+[stackAPI]
+client_id = "12345"
+client_secret = "not_a_real_secret"
+api_key = "not_a_real_api_key"
+
+# These are optional fields as well, if you want request caching you can hook up the application to a redis DB.
+[database]
+host="redis"
+port=6789
+password="password"
+
+[logging]
+file=false
+log_file="stackexchange.log"
+log_level="DEBUG"
+
