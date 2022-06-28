@@ -31,9 +31,6 @@ class SearchResult:
             answer_score=answer_response["score"],
         )
 
-    def to_json(self) -> dict:
-        return json.dumps(self)
-
 
 # Impelement searchable!?
 class StackExchange:
@@ -42,16 +39,16 @@ class StackExchange:
     Facade only caring about search
     """
 
-    _SEARCH_ENDPOINT = "/search/advanced"
-    _ANSWERS_ENDPOINT = "/answers"
+    SEARCH_ENDPOINT = "/search/advanced"
+    ANSWERS_ENDPOINT = "/answers"
 
     def __init__(self, version: str = "2.3") -> None:
         self.__version = version
-        self.__url = f"https://api.stackexchange.com/{version}"
+        self.url = f"https://api.stackexchange.com/{version}"
 
     def _make_request(self, endpoint: str, params: dict) -> dict:
         """Make a GET request to the given stack exchange endpoint with the provided query params"""
-        url = self.__url + endpoint
+        url = self.url + endpoint
         response = requests.get(url, params)
         response_dict = response.json()
 
@@ -61,19 +58,20 @@ class StackExchange:
 
     def _get_search_advanced(self, params: dict) -> dict:
         """GET /search/advanced. Read more: https://api.stackexchange.com/docs/advanced-search"""
-        return self._make_request(endpoint=self._SEARCH_ENDPOINT, params=params)
+        return self._make_request(endpoint=self.SEARCH_ENDPOINT, params=params)
 
+    # TODO: Update this so we take a delmited list of ids... so we make 1 request instead of n requests.
     def _get_answer(self, id_: int, params: dict) -> dict:
         """GET /answers/{ids}. Read more: https://api.stackexchange.com/docs/answers-by-ids"""
-        return self._make_request(endpoint=f"{self._ANSWERS_ENDPOINT}/{id_}", params=params)
+        return self._make_request(endpoint=f"{self.ANSWERS_ENDPOINT}/{id_}", params=params)
 
     def _build_search_params(
-        self,
-        query: str,
-        count: int = 1,
-        tags: Optional[List[str]] = None,
-        site: str = "stackoverflow",
-        in_body: bool = False,
+            self,
+            query: str,
+            count: int = 1,
+            tags: Optional[List[str]] = None,
+            site: str = "stackoverflow",
+            in_body: bool = False,
     ) -> dict:
         """Build parameter dictionary for search requests"""
         params = {
@@ -95,12 +93,12 @@ class StackExchange:
         return params
 
     def search(
-        self,
-        query: str,
-        count: int = 1,
-        tags: Optional[List[str]] = None,
-        site: str = "stackoverflow",
-        in_body: bool = False,
+            self,
+            query: str,
+            count: int = 1,
+            tags: Optional[List[str]] = None,
+            site: str = "stackoverflow",
+            in_body: bool = False,
     ) -> List[SearchResult]:
         """
         Main interface used for searching stack exchange.
@@ -143,15 +141,25 @@ class CachedStackExchange:
         self.service = stack_exchange_service
 
     def search(
-        self,
-        query: str,
-        count: int = 5,
-        tags: Optional[List[str]] = None,
-        site: str = "stackoverflow",
-        in_body: bool = False,
+            self,
+            query: str,
+            count: int = 1,
+            tags: Optional[List[str]] = None,
+            site: str = "stackoverflow",
+            in_body: bool = False,
     ):
+        search_params = self.service._build_search_params(query, count, tags, site, in_body)
+        request = requests.Request(
+            method="GET", url=f"{self.service.url}{self.service.SEARCH_ENDPOINT}", params=search_params
+        ).prepare()
+
         # Cache the request url!
-        if self.cache.get(query) is not None:
-            return self.cache[query]
-        # Check if request is in the DB!?. Since using redis, maybe hash the query and site?
-        self.service.search(query, site)
+        print(f"URL: {request.url}")
+        if self.cache.get(request.url) is not None:
+            print("Fetching result from cache!")
+            return SearchResult(**self.cache.get(request.url))
+
+        search_results = self.service.search(query, count, tags, site, in_body)
+        self.cache.set(key=request.url, value=search_results[0].__dict__)
+
+        return search_results[0]

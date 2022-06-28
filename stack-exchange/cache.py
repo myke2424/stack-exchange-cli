@@ -6,12 +6,12 @@ from abc import ABC, abstractmethod
 class Cache(ABC):
     @abstractmethod
     def get(self, key):
-        """ Get value with associated key in cache """
+        """Get value with associated key in cache"""
         pass
 
     @abstractmethod
     def set(self, key, value):
-        """ Set key with associated value in cache """
+        """Set key with associated value in cache"""
         pass
 
 
@@ -20,7 +20,11 @@ class RedisCache(Cache):
         self.__db = redis.Redis(host=host, port=port, password=password)
 
     def get(self, key):
-        value = self.__db.get(key).decode('utf-8')
+        value = self.__db.get(key)
+
+        if value is not None and isinstance(value, bytes):
+            value = value.decode("utf-8")
+
         # try deserializing value in the case its json encoded
         try:
             value = json.loads(value)
