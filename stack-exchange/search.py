@@ -1,39 +1,29 @@
 """
 Stack exchange client interface used for searching!
 """
-import json
 
 import requests
-from dataclasses import dataclass
 from .errors import StackRequestError, ZeroSearchResultsError
+from .models import Question, Answer, SearchParams, SearchResult
 from typing import Optional, List
 from abc import ABC, abstractmethod
 from .cache import Cache
 
 
-@dataclass(frozen=True)
-class SearchResult:
-    question_title: str
-    question_body: str
-    question_score: int
-    creation_date: str
-    answer: str
-    answer_score: int
-
-    @classmethod
-    def from_search_and_answer_response(cls, search_response: dict, answer_response: dict) -> "SearchResult":
-        return cls(
-            question_title=search_response["title"],
-            question_body=search_response["body"],
-            question_score=search_response["score"],
-            creation_date=search_response["creation_date"],
-            answer=answer_response["body"],
-            answer_score=answer_response["score"],
-        )
+class SearchClient(ABC):
+    @abstractmethod
+    def search(
+        self,
+        query: str,
+        count: int,
+        tags: List[str],
+        site: str,
+        in_body: bool = False,
+    ):
+        pass
 
 
-# Impelement searchable!?
-class StackExchange:
+class StackExchange(SearchClient):
     """
     Wrapper class for the stack exchange API
     Facade only caring about search
@@ -58,47 +48,48 @@ class StackExchange:
 
     def _get_search_advanced(self, params: dict) -> dict:
         """GET /search/advanced. Read more: https://api.stackexchange.com/docs/advanced-search"""
-        return self._make_request(endpoint=self.SEARCH_ENDPOINT, params=params)
+        search_response = self._make_request(endpoint=self.SEARCH_ENDPOINT, params=params)
 
-    # TODO: Update this so we take a delmited list of ids... so we make 1 request instead of n requests.
-    def _get_answer(self, id_: int, params: dict) -> dict:
-        """GET /answers/{ids}. Read more: https://api.stackexchange.com/docs/answers-by-ids"""
-        return self._make_request(endpoint=f"{self.ANSWERS_ENDPOINT}/{id_}", params=params)
+        if not search_response["items"]:
+            raise ZeroSearchResultsError("No search results found.")
 
-    def _build_search_params(
-            self,
-            query: str,
-            count: int = 1,
-            tags: Optional[List[str]] = None,
-            site: str = "stackoverflow",
-            in_body: bool = False,
-    ) -> dict:
-        """Build parameter dictionary for search requests"""
-        params = {
-            "q": query,
-            "accepted": True,
-            "filter": "withbody",
-            "site": site,
-            "sort": "votes",
-            "answers": count,
-        }
+        return search_response
 
-        if in_body:
-            params["body"] = query
-            del params["q"]  # remove query since we're searching by body
+    def _get_answers(self, ids: List[str], params: dict) -> dict:
+        """GET /answers/{ids}. Semi-colon delimited Ids, Read more: https://api.stackexchange.com/docs/answers-by-ids"""
+        return self._make_request(endpoint=f"{self.ANSWERS_ENDPOINT}/{';'.join(ids)}", params=params)
 
-        if tags is not None:
-            params["tagged"] = ";".join(tags)
+    def _get_questions(self, search_params: SearchParams) -> List[Question]:
+        """
+        Get a list of questions by making a request to /search/advanced with the given search_params
+        """
 
-        return params
+        search_response = self._get_search_advanced(search_params.to_json())
+
+        # We only care about the first 'n' results, where n is the count param
+        questions = [
+            Question.from_search_response_item(item) for item in search_response["items"][: search_params.count]
+        ]
+
+        return questions
+
+    def _get_accepted_answers(self, questions: List[Question], site: str) -> List[Answer]:
+        """Get the top accepted answer for each question by making a request to /answers/{ids}"""
+        accepted_answer_ids = [str(question.accepted_answer_id) for question in questions]
+        answers_response = self._get_answers(
+            accepted_answer_ids, params={"site": site, "filter": "withbody"}  # withbody gives us the answer body
+        )
+        answers = [Answer.from_answer_response_item(item) for item in answers_response["items"]]
+
+        return answers
 
     def search(
-            self,
-            query: str,
-            count: int = 1,
-            tags: Optional[List[str]] = None,
-            site: str = "stackoverflow",
-            in_body: bool = False,
+        self,
+        query: str,
+        count: int = 1,
+        tags: Optional[List[str]] = None,
+        site: str = "stackoverflow",
+        in_body: bool = False,
     ) -> List[SearchResult]:
         """
         Main interface used for searching stack exchange.
@@ -110,29 +101,17 @@ class StackExchange:
         :param in_body: Query string must be present in body of post
         :return: Search Result
         """
-        search_params = self._build_search_params(query, count, tags, site, in_body)
-        search_response = self._get_search_advanced(search_params)
+        search_params = SearchParams(query, count, tags, site, in_body)
 
-        if not search_response["items"]:
-            raise ZeroSearchResultsError("No search results found.")
+        questions = self._get_questions(search_params)
+        answers = self._get_accepted_answers(questions, site)
 
-        # We only care about the first 'n' results, where n is the count param
-        questions = search_response["items"][:count]
-
-        answers = [
-            self._get_answer(id_=item["accepted_answer_id"], params={"site": site, "filter": "withbody"})["items"][0]
-            for item in questions
-        ]
-
-        return [
-            SearchResult.from_search_and_answer_response(question, answer)
-            for (question, answer) in zip(questions, answers)
-        ]
+        return [SearchResult(question, answer) for (question, answer) in zip(questions, answers)]
 
 
-class CachedStackExchange:
+class CachedStackExchange(SearchClient):
     """
-    Proxy design pattern. This class uses an identical search interface to StackExchange
+    Proxy structural design pattern. This class uses an identical search interface to StackExchange
     Use a cache as a proxy object to set and get search results for faster look up time.
     """
 
@@ -141,12 +120,12 @@ class CachedStackExchange:
         self.service = stack_exchange_service
 
     def search(
-            self,
-            query: str,
-            count: int = 1,
-            tags: Optional[List[str]] = None,
-            site: str = "stackoverflow",
-            in_body: bool = False,
+        self,
+        query: str,
+        count: int = 1,
+        tags: Optional[List[str]] = None,
+        site: str = "stackoverflow",
+        in_body: bool = False,
     ):
         search_params = self.service._build_search_params(query, count, tags, site, in_body)
         request = requests.Request(
@@ -155,9 +134,12 @@ class CachedStackExchange:
 
         # Cache the request url!
         print(f"URL: {request.url}")
-        if self.cache.get(request.url) is not None:
+
+        cached = self.cache.get(request.url)
+
+        if cached is not None:
             print("Fetching result from cache!")
-            return SearchResult(**self.cache.get(request.url))
+            return SearchResult(**cached)
 
         search_results = self.service.search(query, count, tags, site, in_body)
         self.cache.set(key=request.url, value=search_results[0].__dict__)
