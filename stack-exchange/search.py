@@ -19,7 +19,7 @@ class SearchClient(ABC):
         tags: Optional[List[str]],
         site: str,
         in_body: bool = False,
-    ):
+    ) -> List[SearchResult]:
         pass
 
 

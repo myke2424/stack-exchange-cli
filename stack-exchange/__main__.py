@@ -1,55 +1,92 @@
-import requests
-import toml
 
-with open('config.toml') as f:
-    config = toml.load(f)
-# use for requests
+"""
+Design patterns
 
-from rich.console import Console
+- Singleton app configuration / logger
+- Proxy pattern: Cache stack exchange request
+- Chain of Responsibility: Log files or multiple websites
+- ThreadPool for multiple site requests, can implement threadpool myself for ObjectPool pattern
+- Builder potentially for building complex requests with a lot of parameters!? Idk.
+- Memento or State pattern for going back and forth between question answers in interactive mode?
+
+
+Code Interfaces!!!
+
+stack_exchange = StackExchange()
+
+stack_exchange.search(query="Reverse linked list", site="stackoverflow")
+
+Command line interface
+
+se will be short for stack exchange
+
+se <query>
+
+-q or --query
+
+by default you should be able to search without doing -q, but if anyother kwargs used, --query is required.
+
+se <how to reverse a linked list>
+
+se <query> --site
+
+se how to reverse a linked list --site="stackoverflow" 
+
+se -i how to reverse a linked list
+
+-i = interactive mode!
+
+-t or --tags 
+
+type n to see next search result in fast search.
+"""
+
+code = 'print "Hello World"'
+
+# TUI
 from rich.markdown import Markdown
 
-console = Console()
+from textual import events
+from textual.app import App
+from textual.widgets import Header, Footer, Placeholder, ScrollView
 
 
-# Proxy design pattern, potential!
-class CachedStackExchangeProxy:
-    def __init__(self, stack_exchange_service):
-        self.service = stack_exchange_service
+class MyApp(App):
+    """An example of a very simple Textual App"""
 
-    def search(self, query, site="stackoverflow"):
-        # Check if request is in the DB!?. Since using redis, maybe hash the query and site?
-        self.service.search(query, site)
+    async def on_load(self, event: events.Load) -> None:
+        """Bind keys with the app loads (but before entering application mode)"""
+        await self.bind("b", "view.toggle('sidebar')", "Toggle sidebar")
+        await self.bind("q", "quit", "Quit")
+        await self.bind("escape", "quit", "Quit")
 
+    async def on_mount(self, event: events.Mount) -> None:
+        """Create and dock the widgets."""
 
-class StackExchange:
-    def __init__(self, version="2.3"):
-        self.version = version
-        self.base_url = f"https://api.stackexchange.com/{version}"
+        # A scrollview to contain the markdown file
+        body = ScrollView(gutter=1)
 
-    def _make_request(self, endpoint, params):
-        url = self.base_url + endpoint
-        print(f"Making request to: {url}")
-        resp = requests.get(url, params)
-        return resp.json()
+        # Header / footer / dock
+        await self.view.dock(Header(), edge="top")
+        await self.view.dock(Footer(), edge="bottom")
+        await self.view.dock(Placeholder(name="StackExchange Results"), edge="left", size=30, name="sidebar")
 
-    def search(self, query, site="stackoverflow"):
-        params = {"q": query, "accepted": True, "site": site, "filter": "withbody"}
-        resp = self._make_request(endpoint="/search/advanced", params=params)
+        # Dock the body in the remaining space
+        await self.view.dock(body, edge="right")
 
-        res = resp['items'][0]
-        print(f"****** {res['title']} ******")
-        question = res['body']
-        console.print(question)
+        async def get_markdown(markdown_str) -> None:
+            readme = Markdown(markdown_str, hyperlinks=True)
+            await body.update(readme)
 
-        answer_id = res['accepted_answer_id']
-
-        answer = self._make_request(f"/answers/{answer_id}", params={"site": site,
-                                                                     "filter": "withbody"})
-
-        print("***ANSWER*** \n")
-        a = answer['items'][0]['body']
-        console.print(a)
+        await self.call_later(get_markdown, 5)
 
 
-client = StackExchange()
-resp = client.search("Reverse linked list")
+# CONVERT HTML TO MARKDOWN FOR BETTER RENDERING
+# USE TUI FOR FRONTEND!
+# Maybe use State Pattern for interative mode?
+
+# at least one creation pattern OR behaviour pattern!
+def main():
+   pass
+if __name__ == "__main__":
+    main()

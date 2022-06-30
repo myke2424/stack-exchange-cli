@@ -5,7 +5,7 @@ from typing import List
 
 class Command(ABC):
     def prepare_parser(self, parser: argparse.ArgumentParser) -> None:
-        """ Add command to parser """
+        """Add command to parser"""
 
 
 class QueryCommand(Command):
@@ -18,32 +18,44 @@ class QueryCommand(Command):
 
 
 class SiteCommand(Command):
-    """ Stack exchange website used to search the query on - default=stackoverflow """
+    """Stack exchange website used to search the query on - default=stackoverflow"""
 
     def prepare_parser(self, parser: argparse.ArgumentParser) -> None:
         parser.add_argument("-s", "--site", help=self.__doc__, default="stackoverflow")
 
 
 class TagsCommand(Command):
-    """ Tags used in stackexchange search """
+    """Tags used in stackexchange search"""
 
     def prepare_parser(self, parser: argparse.ArgumentParser) -> None:
         parser.add_argument("-t", "--tags", help=self.__doc__, required=False, default=[], type=list)
 
 
 class InteractiveCommand(Command):
-    """ Interactive search flag, used to display search results and allow user to interactive with them """
+    """Interactive search flag, used to display search results and allow user to interactive with them"""
 
     def prepare_parser(self, parser: argparse.ArgumentParser) -> None:
-        parser.add_argument("-i", "--interactive", help=self.__doc__, required=False, default=False, type=bool)
+        parser.add_argument(
+            "-i",
+            "--interactive",
+            help=self.__doc__,
+            required=False,
+            default=False,
+            type=bool,
+        )
 
 
-_COMMANDS: List[Command] = [QueryCommand(), SiteCommand(), TagsCommand(), InteractiveCommand()]
+_COMMANDS: List[Command] = [
+    QueryCommand(),
+    SiteCommand(),
+    TagsCommand(),
+    InteractiveCommand(),
+]
 
 
 def get_cmd_args() -> argparse.ArgumentParser:
-    """ Parse command line arguments """
-    parser = argparse.ArgumentParser(description='StackExchange Command Line Search Client')
+    """Parse command line arguments"""
+    parser = argparse.ArgumentParser(description="StackExchange Command Line Search Client")
 
     for command in _COMMANDS:
         assert command.__class__.__name__.endswith("Command")

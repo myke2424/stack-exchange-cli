@@ -5,16 +5,17 @@ name = "Foo Bar"
 
 # These are optional fields, if you don't provide stack exchange API credentials,
 # the number of requests will be throttled. Read more here: https://api.stackexchange.com/docs
-[API]
-stack_client_id = ""
-stack_client_secret = ""
-stack_api_key = ""
+[stack_exchange]
+client_id = ""
+client_secret = ""
+api_key = ""
+default_site = "stackoverflow" # Change your default to any available stack exchange website
 
 # These are optional fields as well, if you want request caching you can hook up the application to a redis DB.
-[database]
-redis_host = ""
-redis_port = ""
-redis_password = ""
+[redis]
+host = ""
+port = ""
+password = ""
 
 [logging]
 log_to_file = false

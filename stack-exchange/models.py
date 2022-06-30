@@ -43,6 +43,17 @@ class SearchResult:
     question: Question
     answer: Answer
 
+    @classmethod
+    def from_json(cls, json_) -> 'SearchResult':
+        question, answer = Question(**json_['question']), Answer(**json_['answer'])
+        return cls(question, answer)
+
+    def to_json(self) -> dict:
+        return {
+            "question": self.question.__dict__,
+            "answer": self.answer.__dict__
+        }
+
 
 @dataclass(frozen=True)
 class SearchParams:
@@ -51,10 +62,6 @@ class SearchParams:
     tags: Optional[List[str]]
     site: str
     in_body: bool
-
-    @property
-    def request_url(self) -> str:
-        pass
 
     def to_json(self) -> dict:
         """Build parameter dictionary for search requests"""
