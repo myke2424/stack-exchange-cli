@@ -1,6 +1,10 @@
-import redis
 import json
+import logging
 from abc import ABC, abstractmethod
+
+import redis
+
+logger = logging.getLogger(__name__)
 
 
 class Cache(ABC):
@@ -20,6 +24,7 @@ class RedisCache(Cache):
         self.__db = redis.Redis(host=host, port=port, password=password)
 
     def get(self, key):
+        logger.info(f"Reading cache - key: {key}")
         value = self.__db.get(key)
 
         if value is not None and isinstance(value, bytes):
@@ -34,6 +39,7 @@ class RedisCache(Cache):
 
     def set(self, key, value):
         # if value is json, serialize it to a json string
+        logger.info(f"Writing to cache - key: {key}")
         if isinstance(value, (dict, list)):
             value = json.dumps(value)
         self.__db.set(key, value)

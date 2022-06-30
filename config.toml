@@ -20,5 +20,5 @@ password = ""
 [logging]
 log_to_file = false
 log_filename = "stackexchange.log"
-log_level = "DEBUG"
+level = "DEBUG"
 

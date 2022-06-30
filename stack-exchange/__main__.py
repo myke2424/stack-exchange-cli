@@ -1,92 +1,31 @@
+import logging
 
-"""
-Design patterns
+from . import commands, utils
+from .cache import RedisCache
+from .search import CachedStackExchange, StackExchange
 
-- Singleton app configuration / logger
-- Proxy pattern: Cache stack exchange request
-- Chain of Responsibility: Log files or multiple websites
-- ThreadPool for multiple site requests, can implement threadpool myself for ObjectPool pattern
-- Builder potentially for building complex requests with a lot of parameters!? Idk.
-- Memento or State pattern for going back and forth between question answers in interactive mode?
+config_file_path = "config.toml"
+config = utils.load_toml_file(config_file_path)
 
-
-Code Interfaces!!!
-
-stack_exchange = StackExchange()
-
-stack_exchange.search(query="Reverse linked list", site="stackoverflow")
-
-Command line interface
-
-se will be short for stack exchange
-
-se <query>
-
--q or --query
-
-by default you should be able to search without doing -q, but if anyother kwargs used, --query is required.
-
-se <how to reverse a linked list>
-
-se <query> --site
-
-se how to reverse a linked list --site="stackoverflow" 
-
-se -i how to reverse a linked list
-
--i = interactive mode!
-
--t or --tags 
-
-type n to see next search result in fast search.
-"""
-
-code = 'print "Hello World"'
-
-# TUI
-from rich.markdown import Markdown
-
-from textual import events
-from textual.app import App
-from textual.widgets import Header, Footer, Placeholder, ScrollView
+log_level = config["logging"]["level"]
+logging.basicConfig(level=log_level)
+logger = logging.getLogger(__name__)
+logger.setLevel(log_level)
 
 
-class MyApp(App):
-    """An example of a very simple Textual App"""
-
-    async def on_load(self, event: events.Load) -> None:
-        """Bind keys with the app loads (but before entering application mode)"""
-        await self.bind("b", "view.toggle('sidebar')", "Toggle sidebar")
-        await self.bind("q", "quit", "Quit")
-        await self.bind("escape", "quit", "Quit")
-
-    async def on_mount(self, event: events.Mount) -> None:
-        """Create and dock the widgets."""
-
-        # A scrollview to contain the markdown file
-        body = ScrollView(gutter=1)
-
-        # Header / footer / dock
-        await self.view.dock(Header(), edge="top")
-        await self.view.dock(Footer(), edge="bottom")
-        await self.view.dock(Placeholder(name="StackExchange Results"), edge="left", size=30, name="sidebar")
-
-        # Dock the body in the remaining space
-        await self.view.dock(body, edge="right")
-
-        async def get_markdown(markdown_str) -> None:
-            readme = Markdown(markdown_str, hyperlinks=True)
-            await body.update(readme)
-
-        await self.call_later(get_markdown, 5)
-
-
-# CONVERT HTML TO MARKDOWN FOR BETTER RENDERING
-# USE TUI FOR FRONTEND!
-# Maybe use State Pattern for interative mode?
-
-# at least one creation pattern OR behaviour pattern!
 def main():
-   pass
+    stack_exchange = StackExchange()
+
+    # Create cached search client if redis config
+    if config["redis"]["host"] and config["redis"]["port"] and config["redis"]["password"]:
+        redis_cache = RedisCache(**config["redis"])
+        stack_exchange = CachedStackExchange(stack_exchange_service=StackExchange(), cache=redis_cache)
+
+    args = commands.get_cmd_args()
+    logger.debug(f"Command line arguments: {args}")
+    search_results = stack_exchange.search(query=args.query, site=args.site, tags=args.tags)
+    print(search_results)
+
+
 if __name__ == "__main__":
     main()

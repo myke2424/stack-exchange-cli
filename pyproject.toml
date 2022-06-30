@@ -15,8 +15,8 @@ markdownify = "^0.11.2"
 [tool.poetry.dev-dependencies]
 pytest = "^7.1.2"
 black = "^22.3.0"
-yapf = "^0.32.0"
 flake8 = "^4.0.1"
+isort = "^5.10.1"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

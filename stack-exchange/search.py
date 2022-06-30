@@ -2,12 +2,18 @@
 Stack exchange client interface used for searching!
 """
 
-import requests
-from .errors import StackRequestError, ZeroSearchResultsError
-from .models import Question, Answer, SearchParams, SearchResult
-from typing import Optional, List
+import json
+import logging
 from abc import ABC, abstractmethod
+from typing import List, Optional
+
+import requests
+
 from .cache import Cache
+from .errors import StackRequestError, ZeroSearchResultsError
+from .models import Answer, Question, SearchParams, SearchResult
+
+logger = logging.getLogger(__name__)
 
 
 class SearchClient(ABC):
@@ -41,8 +47,11 @@ class StackExchange(SearchClient):
     def answers_url(self):
         return self.url + self._ANSWERS_ENDPOINT
 
-    def _make_request(self, url: str, params: dict) -> dict:
+    @staticmethod
+    def _make_get_request(url: str, params: dict) -> dict:
         """Make a GET request to the given stack exchange endpoint with the provided query params"""
+        logger.debug(f"Making GET request to: {url}: \n params={json.dumps(params, indent=2)}")
+
         response = requests.get(url, params)
         response_dict = response.json()
 
@@ -52,7 +61,7 @@ class StackExchange(SearchClient):
 
     def _get_search_advanced(self, params: dict) -> dict:
         """GET /search/advanced. Read more: https://api.stackexchange.com/docs/advanced-search"""
-        search_response = self._make_request(url=self.search_url, params=params)
+        search_response = self._make_get_request(url=self.search_url, params=params)
 
         if not search_response["items"]:
             raise ZeroSearchResultsError("No search results found.")
@@ -61,7 +70,7 @@ class StackExchange(SearchClient):
 
     def _get_answers(self, ids: List[str], params: dict) -> dict:
         """GET /answers/{ids}. Semi-colon delimited Ids, Read more: https://api.stackexchange.com/docs/answers-by-ids"""
-        return self._make_request(url=f"{self.answers_url}/{';'.join(ids)}", params=params)
+        return self._make_get_request(url=f"{self.answers_url}/{';'.join(ids)}", params=params)
 
     def _get_questions(self, search_params: SearchParams) -> List[Question]:
         """
@@ -125,7 +134,6 @@ class CachedStackExchange(SearchClient):
     def _prepare_search_url(self, search_params: SearchParams) -> str:
         """Prepare the search url to use it for the key when caching requests"""
         request = requests.Request(method="GET", url=self.service.search_url, params=search_params.to_json()).prepare()
-
         return request.url
 
     def search(
@@ -142,13 +150,12 @@ class CachedStackExchange(SearchClient):
         cached_search_results = self.cache.get(request_url)
 
         if cached_search_results is not None:
-            print("Reading cache!")
+            logger.info(f"Using cached results for url: {request_url}")
             return [SearchResult.from_json(sr_json) for sr_json in cached_search_results]
 
         search_results = self.service.search(query, count, tags, site, in_body)
         search_results_dict = [sr.to_json() for sr in search_results]
 
-        print("Writing to cache")
         self.cache.set(key=request_url, value=search_results_dict)
 
         return search_results

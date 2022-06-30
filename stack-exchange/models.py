@@ -44,15 +44,12 @@ class SearchResult:
     answer: Answer
 
     @classmethod
-    def from_json(cls, json_) -> 'SearchResult':
-        question, answer = Question(**json_['question']), Answer(**json_['answer'])
+    def from_json(cls, json_) -> "SearchResult":
+        question, answer = Question(**json_["question"]), Answer(**json_["answer"])
         return cls(question, answer)
 
     def to_json(self) -> dict:
-        return {
-            "question": self.question.__dict__,
-            "answer": self.answer.__dict__
-        }
+        return {"question": self.question.__dict__, "answer": self.answer.__dict__}
 
 
 @dataclass(frozen=True)
