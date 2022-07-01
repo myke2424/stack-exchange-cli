@@ -3,13 +3,17 @@ from typing import List, Optional
 
 
 @dataclass(frozen=True)
-class Question:
-    title: str
+class SearchResultItem:
     body: str
-    url: str
     score: int
-    accepted_answer_id: int
     creation_date: str
+
+
+@dataclass(frozen=True)
+class Question(SearchResultItem):
+    title: str
+    url: str
+    accepted_answer_id: int
 
     @classmethod
     def from_search_response_item(cls, search_response: dict) -> "Question":
@@ -24,15 +28,14 @@ class Question:
 
 
 @dataclass(frozen=True)
-class Answer:
-    body: str
-    score: int
-    creation_date: str
+class Answer(SearchResultItem):
+    is_accepted: bool
 
     @classmethod
     def from_answer_response_item(cls, answer_response: dict) -> "Answer":
         return cls(
             body=answer_response["body"],
+            is_accepted=answer_response["is_accepted"],
             score=answer_response["score"],
             creation_date=answer_response["creation_date"],
         )
