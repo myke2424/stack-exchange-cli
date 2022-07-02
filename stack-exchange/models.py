@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from typing import List, Optional
 
 
+# TODO: Not sure if I want to use inheritance here.
 @dataclass(frozen=True)
 class SearchResultItem:
     body: str
@@ -27,6 +28,12 @@ class Question(SearchResultItem):
         )
 
 
+# TODO: Not sure if I need this.
+@dataclass(frozen=True)
+class Comment(SearchResultItem):
+    pass
+
+
 @dataclass(frozen=True)
 class Answer(SearchResultItem):
     is_accepted: bool
@@ -41,6 +48,7 @@ class Answer(SearchResultItem):
         )
 
 
+# TODO: Potentially add comment to result
 @dataclass(frozen=True)
 class SearchResult:
     question: Question
@@ -55,6 +63,7 @@ class SearchResult:
         return {"question": self.question.__dict__, "answer": self.answer.__dict__}
 
 
+# TODO: Remove, since we replaced with dictionary
 @dataclass(frozen=True)
 class SearchParams:
     query: str

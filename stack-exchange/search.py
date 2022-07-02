@@ -16,17 +16,26 @@ from .models import Answer, Question, SearchParams, SearchResult
 logger = logging.getLogger(__name__)
 
 
+# TODO: This interface is breaking DIP i think... The abstraction has to many 'details', could be subject to change.
+# Might make more sense to have 'query', 'count', then **kwargs.
+# This way, the open/closed principle will stand, we can extend this while adding additional arguments if need be with kwargs
+# Fast search, press space to see more results!
+
+# If we're searching multiple websites, we can implement our own thread pool to do this..
+# Object Pool Pattern
+
+
 class SearchClient(ABC):
     @abstractmethod
-    def search(
-        self,
-        query: str,
-        count: int,
-        tags: Optional[List[str]],
-        site: str,
-        in_body: bool = False,
-    ) -> List[SearchResult]:
-        pass
+    def search(self, query: str, site: str, num: int, params: Optional[dict] = None) -> List[SearchResult]:
+        """
+        Main interface used for searching.
+
+        :param query: Query string to search for
+        :param site: Websites we are searching on # TODO: Potentially change this to site(s), so we can do parallel searching.
+        :param num: Number of results
+        :param params: Optional parameters that can be used for search requests
+         """
 
 
 class StackExchange(SearchClient):
@@ -72,16 +81,16 @@ class StackExchange(SearchClient):
         """GET /answers/{ids}. Semi-colon delimited Ids, Read more: https://api.stackexchange.com/docs/answers-by-ids"""
         return self._make_get_request(url=f"{self.answers_url}/{';'.join(ids)}", params=params)
 
-    def _get_questions(self, search_params: SearchParams) -> List[Question]:
+    def _get_questions(self, search_params: dict, num: int) -> List[Question]:
         """
         Get a list of questions by making a request to /search/advanced with the given search_params
         """
 
-        search_response = self._get_search_advanced(search_params.to_json())
+        search_response = self._get_search_advanced(search_params)
 
-        # We only care about the first 'n' results, where n is the count param
+        # We only care about the first 'n' results, where n is the number of results
         questions = [
-            Question.from_search_response_item(item) for item in search_response["items"][: search_params.count]
+            Question.from_search_response_item(item) for item in search_response["items"][:num]
         ]
 
         return questions
@@ -96,27 +105,21 @@ class StackExchange(SearchClient):
 
         return answers
 
-    def search(
-        self,
-        query: str,
-        count: int = 1,
-        tags: Optional[List[str]] = None,
-        site: str = "stackoverflow",
-        in_body: bool = False,
-    ) -> List[SearchResult]:
+    def search(self, query: str, site: str, num: int = 1, params: Optional[dict] = None) -> List[SearchResult]:
+        """ Main interface used for searching stack exchange. """
         """
-        Main interface used for searching stack exchange.
-
-        :param query: Search query to search for on stack exchange
-        :param count: Number of results we want, default to 1
-        :param tags: Search tags, i.e. ['python', 'recursion']
-        :param site: Stack exchange website, i.e. 'stackoverflow', 'askubuntu', 'softwareengineering'
-        :param in_body: Query string must be present in body of post
-        :return: Search Result
+        Psuedo code...
+        
+        If we are searching multiple sites...
+        We'll have 
+        
+        
         """
-        search_params = SearchParams(query, count, tags, site, in_body)
 
-        questions = self._get_questions(search_params)
+        # TODO: Make default parameters for search... or go back to searchparams dataclass.
+        search_params = {"q": query, "site": site, "filter": "withbody", "accepted": True} if params is None else {
+            "q": query, "site": site, **params}
+        questions = self._get_questions(search_params, num)
         answers = self._get_accepted_answers(questions, site)
 
         return [SearchResult(question, answer) for (question, answer) in zip(questions, answers)]
@@ -131,20 +134,14 @@ class CachedStackExchange(SearchClient):
         self.cache = cache
         self.service = stack_exchange_service
 
-    def _prepare_search_url(self, search_params: SearchParams) -> str:
+    def _prepare_search_url(self, search_params: dict) -> str:
         """Prepare the search url to use it for the key when caching requests"""
-        request = requests.Request(method="GET", url=self.service.search_url, params=search_params.to_json()).prepare()
+        request = requests.Request(method="GET", url=self.service.search_url, params=search_params).prepare()
         return request.url
 
-    def search(
-        self,
-        query: str,
-        count: int = 1,
-        tags: Optional[List[str]] = None,
-        site: str = "stackoverflow",
-        in_body: bool = False,
-    ) -> List[SearchResult]:
-        search_params = SearchParams(query, count, tags, site, in_body)
+    def search(self, query: str, site: str, num: int = 1, params: Optional[dict] = None) -> List[SearchResult]:
+        search_params = {"q": query, "site": site, "accepted": True, "filter": "withbody"} if params is None else {
+            "q": query, "site": site, **params}
         request_url = self._prepare_search_url(search_params)
 
         cached_search_results = self.cache.get(request_url)
@@ -153,7 +150,7 @@ class CachedStackExchange(SearchClient):
             logger.info(f"Using cached results for url: {request_url}")
             return [SearchResult.from_json(sr_json) for sr_json in cached_search_results]
 
-        search_results = self.service.search(query, count, tags, site, in_body)
+        search_results = self.service.search(query, site, num, params)
         search_results_dict = [sr.to_json() for sr in search_results]
 
         self.cache.set(key=request_url, value=search_results_dict)
