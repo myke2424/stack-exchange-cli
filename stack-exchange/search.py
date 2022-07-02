@@ -5,7 +5,6 @@ Stack exchange client interface used for searching!
 import json
 import logging
 from abc import ABC, abstractmethod
-from typing import List, Optional
 
 import requests
 
@@ -27,7 +26,7 @@ logger = logging.getLogger(__name__)
 
 class SearchClient(ABC):
     @abstractmethod
-    def search(self, query: str, site: str, num: int, params: Optional[dict] = None) -> List[SearchResult]:
+    def search(self, query: str, site: str, num: int, params: dict | None = None) -> list[SearchResult]:
         """
         Main interface used for searching.
 
@@ -77,11 +76,11 @@ class StackExchange(SearchClient):
 
         return search_response
 
-    def _get_answers(self, ids: List[str], params: dict) -> dict:
+    def _get_answers(self, ids: list[str], params: dict) -> dict:
         """GET /answers/{ids}. Semi-colon delimited Ids, Read more: https://api.stackexchange.com/docs/answers-by-ids"""
         return self._make_get_request(url=f"{self.answers_url}/{';'.join(ids)}", params=params)
 
-    def _get_questions(self, search_params: dict, num: int) -> List[Question]:
+    def _get_questions(self, search_params: dict, num: int) -> list[Question]:
         """
         Get a list of questions by making a request to /search/advanced with the given search_params
         """
@@ -95,7 +94,7 @@ class StackExchange(SearchClient):
 
         return questions
 
-    def _get_accepted_answers(self, questions: List[Question], site: str) -> List[Answer]:
+    def _get_accepted_answers(self, questions: list[Question], site: str) -> list[Answer]:
         """Get the top accepted answer for each question by making a request to /answers/{ids}"""
         accepted_answer_ids = [str(question.accepted_answer_id) for question in questions]
         answers_response = self._get_answers(
@@ -105,7 +104,7 @@ class StackExchange(SearchClient):
 
         return answers
 
-    def search(self, query: str, site: str, num: int = 1, params: Optional[dict] = None) -> List[SearchResult]:
+    def search(self, query: str, site: str, num: int = 1, params: dict | None = None) -> list[SearchResult]:
         """ Main interface used for searching stack exchange. """
         """
         Psuedo code...
@@ -139,7 +138,7 @@ class CachedStackExchange(SearchClient):
         request = requests.Request(method="GET", url=self.service.search_url, params=search_params).prepare()
         return request.url
 
-    def search(self, query: str, site: str, num: int = 1, params: Optional[dict] = None) -> List[SearchResult]:
+    def search(self, query: str, site: str, num: int = 1, params: dict | None = None) -> list[SearchResult]:
         search_params = {"q": query, "site": site, "accepted": True, "filter": "withbody"} if params is None else {
             "q": query, "site": site, **params}
         request_url = self._prepare_search_url(search_params)
