@@ -89,7 +89,7 @@ class StackExchange(SearchClient):
 
         # We only care about the first 'n' results, where n is the number of results
         questions = [
-            Question.from_search_response_item(item) for item in search_response["items"][:num]
+            Question.from_response_item(item) for item in search_response["items"][:num]
         ]
 
         return questions
@@ -100,7 +100,7 @@ class StackExchange(SearchClient):
         answers_response = self._get_answers(
             accepted_answer_ids, params={"site": site, "filter": "withbody"}  # withbody gives us the answer body
         )
-        answers = [Answer.from_answer_response_item(item) for item in answers_response["items"]]
+        answers = [Answer.from_response_item(item) for item in answers_response["items"]]
 
         return answers
 

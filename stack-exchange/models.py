@@ -9,43 +9,36 @@ class SearchResultItem:
     score: int
     creation_date: str
 
+    @classmethod
+    def from_response_item(cls, search_response: dict) -> "SearchResultItem":
+        attrs = cls.__dataclass_fields__.keys()
+        item_dict = {}
+
+        for k, v in search_response.items():
+            if k in attrs:
+                item_dict[k] = v
+
+        if len(item_dict) != len(attrs):
+            raise ValueError("Search response doesn't contain all required fields")
+        return cls(**item_dict)
+
 
 @dataclass(frozen=True)
 class Question(SearchResultItem):
     title: str
-    url: str
+    link: str
     accepted_answer_id: int
-
-    @classmethod
-    def from_search_response_item(cls, search_response: dict) -> "Question":
-        return cls(
-            title=search_response["title"],
-            body=search_response["body"],
-            url=search_response["link"],
-            score=search_response["score"],
-            accepted_answer_id=search_response["accepted_answer_id"],
-            creation_date=search_response["creation_date"],
-        )
-
-
-# TODO: Not sure if I need this.
-@dataclass(frozen=True)
-class Comment(SearchResultItem):
-    pass
 
 
 @dataclass(frozen=True)
 class Answer(SearchResultItem):
     is_accepted: bool
 
-    @classmethod
-    def from_answer_response_item(cls, answer_response: dict) -> "Answer":
-        return cls(
-            body=answer_response["body"],
-            is_accepted=answer_response["is_accepted"],
-            score=answer_response["score"],
-            creation_date=answer_response["creation_date"],
-        )
+
+# TODO: Not sure if I need this.
+@dataclass(frozen=True)
+class Comment(SearchResultItem):
+    pass
 
 
 # TODO: Potentially add comment to result
