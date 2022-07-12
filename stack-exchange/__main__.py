@@ -3,11 +3,12 @@ import logging
 from . import commands, utils
 from .cache import RedisCache
 from .search import CachedStackExchange, StackExchange
+from .tui import MyApp
 
-config_file_path = "config.toml"
-config = utils.load_toml_file(config_file_path)
+config_file_path = "config.yaml"
+config = utils.load_yaml_file(config_file_path)
 
-log_level = config["logging"]["level"]
+log_level = config["logging"]["log_level"]
 logging.basicConfig(level=log_level)
 logger = logging.getLogger(__name__)
 logger.setLevel(log_level)
