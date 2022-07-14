@@ -38,7 +38,7 @@ class SearchRequest:
             self.__accepted = None
             self.__filter = "withbody"
 
-        def with_filter(self, filter: str):
+        def with_filter(self, filter: str) -> 'Builder':
             """
             Filter used on the request to modify the response
             read more here: https://api.stackexchange.com/docs/filters
@@ -46,7 +46,7 @@ class SearchRequest:
             self.__filter = filter
             return self
 
-        def with_tags(self, tags: str):
+        def with_tags(self, tags: str) -> 'Builder':
             """
             A list of tags which at least one will be present on all returned questions.
             :param tags: Space seperated tags, i.e. "python c++ rust"
@@ -54,12 +54,12 @@ class SearchRequest:
             self.__tags = ";".join(tags.split(" "))
             return self
 
-        def accepted_only(self):
+        def accepted_only(self) -> 'Builder':
             """Return only questions with accepted answers"""
             self.__accepted = True
             return self
 
-        def n_results(self, n: int):
+        def n_results(self, n: int) -> 'Builder':
             """Number of search results we want"""
             self.__num = n
             return self
@@ -131,7 +131,7 @@ class SearchResult:
     answer: Answer
 
     @classmethod
-    def from_json(cls, json_) -> "SearchResult":
+    def from_json(cls, json_: dict) -> "SearchResult":
         """Deserialize JSON to SearchResult obj"""
         question, answer = Question(**json_["question"]), Answer(**json_["answer"])
         return cls(question, answer)
