@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from . import utils
 
 
 @dataclass
@@ -14,6 +15,18 @@ class SearchRequest:
     site: str
     accepted: str
     filter: str
+
+    def to_json(self) -> dict:
+        """JSON representation of search request"""
+        json_ = {
+            "q": self.query,
+            "site": self.site,
+            "accepted": self.accepted,
+            "tags": self.tags,
+            "filter": self.filter,
+        }
+
+        return json_
 
     class Builder:
         """
@@ -38,7 +51,7 @@ class SearchRequest:
             self.__accepted = None
             self.__filter = "withbody"
 
-        def with_filter(self, filter: str) -> 'Builder':
+        def with_filter(self, filter: str) -> "Builder":
             """
             Filter used on the request to modify the response
             read more here: https://api.stackexchange.com/docs/filters
@@ -46,7 +59,7 @@ class SearchRequest:
             self.__filter = filter
             return self
 
-        def with_tags(self, tags: str) -> 'Builder':
+        def with_tags(self, tags: str) -> "Builder":
             """
             A list of tags which at least one will be present on all returned questions.
             :param tags: Space seperated tags, i.e. "python c++ rust"
@@ -54,12 +67,12 @@ class SearchRequest:
             self.__tags = ";".join(tags.split(" "))
             return self
 
-        def accepted_only(self) -> 'Builder':
+        def accepted_only(self) -> "Builder":
             """Return only questions with accepted answers"""
             self.__accepted = True
             return self
 
-        def n_results(self, n: int) -> 'Builder':
+        def n_results(self, n: int) -> "Builder":
             """Number of search results we want"""
             self.__num = n
             return self
@@ -93,12 +106,9 @@ class StackResponseItem:
     def from_response_item(cls, response_item: dict) -> "StackResponseItem":
         """Alternate constructor to create the object based on the raw GET response from the stack exchange API"""
         attrs = cls.__dataclass_fields__.keys()
-        item_dict = {}
 
         # match response fields with class attributes
-        for k, v in response_item.items():
-            if k in attrs:
-                item_dict[k] = v
+        item_dict = {k: v for k, v in response_item.items() if k in attrs}
 
         if len(item_dict) != len(attrs):
             raise ValueError(
@@ -139,3 +149,58 @@ class SearchResult:
     def to_json(self) -> dict:
         """Serialize to JSON"""
         return {"question": self.question.__dict__, "answer": self.answer.__dict__}
+
+
+@dataclass(frozen=True)
+class StackExchangeApiConfig:
+    """
+    Model representation of the Stack Exchange API Config
+    API Configuration is optional, if you don't provide stack exchange API
+    credentials, the number of requests will be throttled.
+
+    Read more: (https://api.stackexchange.com/docs/authentication)
+    """
+
+    client_id: str
+    client_secret: str
+    api_key: str
+    default_site: str
+    version: str
+
+
+@dataclass(frozen=True)
+class RedisConfig:
+    """Model representation of a Redis Database configuration - optional if the user wants to cache requests"""
+
+    host: str
+    port: int
+    password: str
+
+
+@dataclass(frozen=True)
+class LoggingConfig:
+    """Model representation of the applications log settings"""
+
+    log_to_file: bool
+    log_filename: str
+    log_level: str
+
+
+@dataclass
+class Config:
+    """Model representation of the application configuration settings"""
+
+    api: StackExchangeApiConfig | None
+    redis: RedisConfig | None
+    logging: LoggingConfig
+
+    @classmethod
+    def from_yaml_file(cls, file_path: str) -> "Config":
+        config = utils.load_yaml_file(file_path)
+        api, redis, logging = (
+            StackExchangeApiConfig(**config["api"]),
+            RedisConfig(**config["redis"]),
+            LoggingConfig(**config["logging"]),
+        )
+
+        return cls(api, redis, logging)
