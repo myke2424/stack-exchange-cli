@@ -1,41 +1,92 @@
-from textual import events
-from textual.app import App
-from textual.widgets import Header, Footer, Placeholder, ScrollView
+""" Terminal UI """
 
-from rich.markdown import Markdown
-from .utils import html_to_markdown
+import logging
 
+from rich import print as rprint
+from rich.console import Console
+from . import utils
+import sys
+from .models import SearchResult
+import logging
+import webbrowser
 
-class MyApp(App):
-    """An example of a very simple Textual App"""
-
-    async def on_load(self, event: events.Load) -> None:
-        """Bind keys with the app loads (but before entering application mode)"""
-        await self.bind("b", "view.toggle('sidebar')", "Toggle sidebar")
-        await self.bind("q", "quit", "Quit")
-        await self.bind("escape", "quit", "Quit")
+logger = logging.getLogger(__name__)
 
 
-    async def on_mount(self, event: events.Mount) -> None:
-        """Create and dock the widgets."""
+class Terminal:
+    """Responsible for handling user input and displaying results to the terminal"""
 
-        # A scrollview to contain the markdown file
-        body = ScrollView(gutter=1)
+    def __init__(self, interactive_search: bool) -> None:
+        self.__console = Console()
+        self.__interactive_search = interactive_search
 
-        # Header / footer / dock
-        await self.view.dock(Header(), edge="top")
-        await self.view.dock(Footer(), edge="bottom")
-        await self.view.dock(Placeholder(name="StackExchange Results"), edge="left", size=30, name="sidebar")
+    def display(self, query: str, search_results: list[SearchResult]) -> None:
+        """Main interface to display terminal output and interaction"""
+        if not self.__interactive_search:
+            logger.info("Using fast-search...")
+            self._print_result(search_results[0])
+            sys.exit(0)
 
-        # Dock the body in the remaining space
-        await self.view.dock(body, edge="right")
-        self.load_markdown(body, md)
-        #
-        # async def get_markdown(markdown_str) -> None:
-        #     readme = Markdown(markdown_str, hyperlinks=True)
-        #     await body.update(readme)
-        #
-        # await self.call_later(get_markdown, 5)
+        self._interactive_search_handler(query, search_results)
 
-    async def load_markdown(self, body, md):
-        await body.update(md)
+    def _interactive_search_handler(self, query: str, search_results: list[SearchResult]):
+        """Handle user input and display results to console for interactive mode"""
+        while True:
+            self._print_result_titles(query, search_results)
+            selected_result_idx = self._prompt_question_number_input(search_results)
+            search_result = search_results[selected_result_idx]
+            self._print_result(search_result)
+
+            rprint(
+                f"\n[bold green]Enter [bold red]'q'[/bold red] to quit |  [bold red]'g'[/bold red] to go back to "
+                f"results | [bold red]'o'[/bold red] to open question in browser "
+            )
+
+            self._command_input_handler(search_result)
+
+    @staticmethod
+    def _prompt_question_number_input(search_results: list[SearchResult]) -> int:
+        """Prompt user for the selected question #, to be used as an index into search results"""
+        while True:
+            try:
+                selected_result_idx = int(input("Enter question number to view answer: ")) - 1
+
+                if 0 <= selected_result_idx <= len(search_results) - 1:
+                    break
+            except ValueError:
+                rprint("[bold red]INVALID INPUT... please enter a valid question number")
+        return selected_result_idx
+
+    @staticmethod
+    def _command_input_handler(search_result: SearchResult) -> None:
+        """Prompt user input for a command in interactive mode and handle the input"""
+        while True:
+            command = input("")
+
+            match command:
+                case "o":
+                    webbrowser.open(search_result.question.link)
+                    continue
+                case "g":
+                    break
+                case "q":
+                    sys.exit(0)
+                case other:
+                    print("Invalid Command!")
+
+    @staticmethod
+    def _print_result_titles(query: str, search_results: list[SearchResult]) -> None:
+        """Print all the question titles from search results to the console"""
+        rprint(f"\n[bold green]Search results for query: '{''.join(query)}'\n")
+        for idx, result in enumerate(search_results):
+            rprint(f"{idx + 1}. [bold magenta]{result.question.title}")
+        print("\n")
+
+    def _print_result(self, search_result: SearchResult) -> None:
+        """Pretty print a search result to the console using Rich Formatting"""
+        rprint(f"\n[bold red]Question: [bold green]{search_result.question.title} \n")
+        self.__console.print(utils.html_to_markdown(search_result.question.body))
+
+        rprint(f"\n[bold red]Top Answer: [bold red] \n")
+        self.__console.print(utils.html_to_markdown(search_result.answer.body))
+        print("\n")

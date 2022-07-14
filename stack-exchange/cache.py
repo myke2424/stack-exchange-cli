@@ -33,7 +33,7 @@ class RedisCache(Cache):
         self._validate_connection()
 
     def _validate_connection(self) -> None:
-        """ Validate connection to Redis DB is working """
+        """Validate connection to Redis DB is working"""
         if not self.__db.ping():
             raise RedisConnectionError("Failed to connect to Redis Database...")
 

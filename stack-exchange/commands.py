@@ -18,21 +18,21 @@ class QueryCommand(Command):
 
 
 class SiteCommand(Command):
-    """Stack exchange website used to search the query on - default=stackoverflow [OPTIONAL] """
+    """Stack exchange website used to search the query on - default=stackoverflow [OPTIONAL]"""
 
     def prepare_parser(self, parser: argparse.ArgumentParser) -> None:
         parser.add_argument("-s", "--site", help=self.__doc__, default="stackoverflow")
 
 
 class TagsCommand(Command):
-    """ Space seperated tags used in stackexchange search [OPTIONAL] """
+    """Space seperated tags used in stackexchange search [OPTIONAL]"""
 
     def prepare_parser(self, parser: argparse.ArgumentParser) -> None:
         parser.add_argument("-t", "--tags", help=self.__doc__, required=False, default="")
 
 
 class InteractiveCommand(Command):
-    """ Interactive search flag, used to display search results and allow user to interact with them [OPTIONAL]"""
+    """Interactive search flag, used to display search results and allow user to interact with them [OPTIONAL]"""
 
     def prepare_parser(self, parser: argparse.ArgumentParser) -> None:
         parser.add_argument(
@@ -40,8 +40,7 @@ class InteractiveCommand(Command):
             "--interactive",
             help=self.__doc__,
             required=False,
-            default=False,
-            type=bool,
+            action='store_true',
         )
 
 
