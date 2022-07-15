@@ -62,7 +62,7 @@ The above command uses fast search, which fetches the top-voted question and ans
 python3.10 -m stack-exchange -q="How to merge two dictionaries"
 ```
 
-**Stack exchange site** to search on[*OPTIONAL*] - default=stackoverflow \
+**Stack exchange site** to search on [*OPTIONAL*] - default=stackoverflow \
 View all sites here: (https://stackexchange.com/sites)
 
 ```bash
@@ -78,7 +78,7 @@ python3.10 -m stack-exchange -q="Segmentation fault cause" -t="c c++ rust"
 ```
 
 **Interactive Search** [*OPTIONAL*] \
-It will allow the user to interact while searching, analogous to browsing stackoverflow questions in your browser,
+Allow the user to interact while searching, analogous to browsing stackoverflow questions in your browser,
 except in the terminal!
 
 ```bash
