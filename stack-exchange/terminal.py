@@ -90,3 +90,5 @@ class Terminal:
         rprint(f"\n[bold red]Top Answer: [bold red] \n")
         self.__console.print(utils.html_to_markdown(search_result.answer.body))
         print("\n")
+        rprint(f"Question link: {search_result.question.link}")
+        print("\n")
