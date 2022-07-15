@@ -16,6 +16,7 @@ class SearchRequest:
     site: str
     accepted: str
     filter: str
+    sort_by: str
 
     def to_json(self) -> dict:
         """JSON representation of search request"""
@@ -25,7 +26,7 @@ class SearchRequest:
             "accepted": self.accepted,
             "tags": self.tags,
             "filter": self.filter,
-            "sort": "votes",
+            "sort": self.sort_by,
         }
 
         return json_
@@ -52,6 +53,7 @@ class SearchRequest:
             self.__num = None
             self.__accepted = None
             self.__filter = "withbody"
+            self.__sort_by = "votes"
 
         def with_filter(self, filter: str):
             """
@@ -79,6 +81,11 @@ class SearchRequest:
             self.__num = n
             return self
 
+        def sort_by(self, method: str):
+            """Sort results by method: options = (votes, activity, creation, relevance)"""
+            self.__sort_by = method
+            return self
+
         def build(self) -> "SearchRequest":
             """Build the SearchRequest object"""
             request = {
@@ -88,6 +95,7 @@ class SearchRequest:
                 "site": self.__site,
                 "accepted": self.__accepted,
                 "filter": self.__filter,
+                "sort_by": self.__sort_by
             }
 
             return SearchRequest(**request)
@@ -132,6 +140,7 @@ class Question(StackResponseItem):
 class Answer(StackResponseItem):
     """Model representation of a StackExchange Answer"""
 
+    answer_id: int
     is_accepted: bool
 
 

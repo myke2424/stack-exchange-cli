@@ -9,9 +9,10 @@ def main():
     """Main function to run the application"""
     app = App()
     stack_exchange = app.get_stack_exchange_service()
+    site = app.args.site or app.config.api.default_site
 
     search_request = (
-        SearchRequest.Builder(app.args.query, app.args.site)
+        SearchRequest.Builder(app.args.query, site)
         .with_tags(app.args.tags)
         .accepted_only()
         .n_results(app.args.num)

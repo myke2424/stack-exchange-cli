@@ -88,7 +88,8 @@ class StackExchange(Searchable):
         questions = self._get_questions(request.to_json(), request.num)
         answers = self._get_accepted_answers_for_questions(questions, request.site)
 
-        return [SearchResult(question, answer) for (question, answer) in zip(questions, answers)]
+        search_results = [SearchResult(q, a) for q in questions for a in answers if q.accepted_answer_id == a.answer_id]
+        return search_results
 
 
 class CachedStackExchange(Searchable):
