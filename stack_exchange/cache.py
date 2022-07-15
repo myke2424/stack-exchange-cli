@@ -14,8 +14,7 @@ class Cache(ABC):
     """
     An interface for a cache keyed by a string with any data type as the value.
 
-    Derived classes can implement their own data serialization/deserialization to conform
-    to the type-specific constraints of the cache being used.
+    Derived classes can implement their own data serialization/deserialization.
     """
 
     @abstractmethod

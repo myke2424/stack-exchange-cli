@@ -7,4 +7,4 @@ class ZeroSearchResultsError(RuntimeError):
 
 
 class RedisConnectionError(ConnectionError):
-    """Raise exception connection to a Redis DB fails"""
+    """Raise exception when connection to a Redis DB fails"""
