@@ -88,7 +88,8 @@ class StackExchange(Searchable):
         questions = self._get_questions(request.to_json(), request.num)
         answers = self._get_accepted_answers_for_questions(questions, request.site)
 
-        return [SearchResult(question, answer) for (question, answer) in zip(questions, answers)]
+        search_results = [SearchResult(q, a) for q in questions for a in answers if q.accepted_answer_id == a.answer_id]
+        return search_results
 
 
 class CachedStackExchange(Searchable):
@@ -120,7 +121,7 @@ class CachedStackExchange(Searchable):
             logger.info(f"Using cached results for url: {request_url}")
             return [SearchResult.from_json(sr_json) for sr_json in cached_search_results]
 
-        search_results = self.service.search(requests)
+        search_results = self.service.search(request)
         search_results_json = [sr.to_json() for sr in search_results]
 
         # cache request URI as the key and serialized JSON list of search results the value.

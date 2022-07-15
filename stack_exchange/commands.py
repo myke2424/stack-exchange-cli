@@ -18,10 +18,10 @@ class QueryCommand(Command):
 
 
 class SiteCommand(Command):
-    """Stack exchange website used to search the query on - default=stackoverflow [OPTIONAL]"""
+    """Stack exchange website used to search the query on [OPTIONAL]"""
 
     def prepare_parser(self, parser: argparse.ArgumentParser) -> None:
-        parser.add_argument("-s", "--site", help=self.__doc__, default="stackoverflow")
+        parser.add_argument("-s", "--site", help=self.__doc__)
 
 
 class TagsCommand(Command):

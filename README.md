@@ -4,6 +4,7 @@ Search stack exchange websites in your terminal!
 
 With beautiful terminal formatting using Rich.
 
+![Demo](https://media.giphy.com/media/TsWaWpgD0S4bP3SHv3/giphy.gif)
 ## How it works
 
 Displays the highest up-voted question and top answer for your search request \
@@ -35,16 +36,15 @@ Or use **poetry** to install dependencies (https://python-poetry.org/docs/)
 poetry install
 ```
 
-Or run the `scripts/install.sh` script in the **root directory**
+Or run the `scripts/install.sh` script - in the **root directory**
 
 ```bash
-sudo bash install.sh
+sudo bash scripts/install.sh
 ```
 
-Or build using make
+Or build using make - in the **root directory**
 
 ```
-# run in root directory
 make
 ```
 
