@@ -1,4 +1,4 @@
-## Stack Exchange CLI Search Client
+## Stack Exchange Search CLI
 
 Search stack exchange websites in your terminal!
 
