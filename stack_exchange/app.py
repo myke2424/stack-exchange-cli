@@ -1,5 +1,6 @@
 import argparse
 import logging
+import os
 
 from .cache import RedisCache
 from .commands import get_cmd_args
@@ -22,7 +23,7 @@ class App(Singleton):
     Configuration data includes - (redis, api, logging, cmd line arguments)
     """
 
-    _CONFIG_FILE_PATH = "config.yaml"
+    _CONFIG_FILE_PATH = os.path.join(os.path.dirname(__file__), "../config.yaml")
 
     def __init__(self) -> None:
         self.__config = Config.from_yaml_file(self._CONFIG_FILE_PATH)

@@ -1,4 +1,5 @@
-## Stack Exchange CLI Search Client
+# Stack Exchange Search CLI
+[![PyPI](https://img.shields.io/pypi/v/stack-exchange-cli?color=brightgreen) ![Build status](https://github.com/myke2424/stack-exchange-cli/actions/workflows/build.yaml/badge.svg)
 
 Search stack exchange websites in your terminal!
 
@@ -22,15 +23,19 @@ Displays the highest up-voted question and top answer for your search request \
 
 * Python 3.10 or higher
 
-#####     
+#####      
+Just pip install it!
+```bash
+python3.10 -m pip install stack-exchange-cli
+```
 
-Install **python3.10** and just use **pip** to install the requirements file
+Or install the **requirements** file manually
 
 ```bash
 python3.10 -m pip install -r requirements.txt
 ```
 
-Or use **poetry** to install dependencies (https://python-poetry.org/docs/)
+Or use **poetry** to install dependencies locally (https://python-poetry.org/docs/)
 
 ```bash
 poetry install
@@ -46,6 +51,13 @@ Or build using make - in the **root directory**
 
 ```
 make
+```
+
+Or build from source using poetry
+
+```bash
+poetry build
+python3.10 -m pip install dist/stack_exchange_cli*.whl
 ```
 
 ## Usage
