@@ -9,12 +9,11 @@ api:
 
 # These are optional fields as well, if you want request caching you can hook the application up to a redis DB.
 redis:
-  host: redis-18182.c278.us-east-1-4.ec2.cloud.redislabs.com
-  port: 18182
-  password: LcX4L6jQ3MvbTDUgTJ8P7YN6BncJU4Eg
+  host: null
+  port: null
+  password: null
 
 logging:
   log_to_file: false
   log_filename: "stackexchange.log"
   log_level: "CRITICAL"
-
