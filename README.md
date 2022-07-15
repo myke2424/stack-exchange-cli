@@ -48,7 +48,7 @@ sudo bash install.sh
 Use the **-q** command followed by the search query:
 
 ```bash
-python3 -m stack-exchange -q="BFS vs DFS"
+python3 -m stack_exchange -q="BFS vs DFS"
 ```
 
 The above command uses fast search, which fetches the top-voted question and answer and displays them to the console.
@@ -59,7 +59,7 @@ The above command uses fast search, which fetches the top-voted question and ans
 
 ```bash
 # -q or --query
-python3.10 -m stack-exchange -q="How to merge two dictionaries"
+python3.10 -m stack_exchange -q="How to merge two dictionaries"
 ```
 
 **Stack exchange site** to search on[*OPTIONAL*] - default=stackoverflow \
@@ -67,14 +67,14 @@ View all sites here: (https://stackexchange.com/sites)
 
 ```bash
 # -s or --site
-python3.10 -m stack-exchange -q="Big O vs Big Theta" -s="softwareengineering"
+python3.10 -m stack_exchange -q="Big O vs Big Theta" -s="softwareengineering"
 ```
 
 **Stack exchange tags** [*OPTIONAL*]
 
 ```bash
 # -t or --tags
-python3.10 -m stack-exchange -q="Segmentation fault cause" -t="c c++ rust"
+python3.10 -m stack_exchange -q="Segmentation fault cause" -t="c c++ rust"
 ```
 
 **Interactive Search** [*OPTIONAL*] \
@@ -83,14 +83,14 @@ except in the terminal!
 
 ```bash
 # -i or --interactive
-python3.10 -m stack-exchange -q="Segmentation fault cause" -i
+python3.10 -m stack_exchange -q="Segmentation fault cause" -i
 ```
 
 **Number of results** to display when interactive searching [*OPTIONAL*] - default=20
 
 ```bash
 # -n or --num
-python3.10 -m stack-exchange -q="Segmentation fault cause" -i -n=20
+python3.10 -m stack_exchange -q="Segmentation fault cause" -i -n=20
 ```
 
 ## Configuration

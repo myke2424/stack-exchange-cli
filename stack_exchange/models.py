@@ -25,6 +25,7 @@ class SearchRequest:
             "accepted": self.accepted,
             "tags": self.tags,
             "filter": self.filter,
+            "sort": "votes",
         }
 
         return json_
