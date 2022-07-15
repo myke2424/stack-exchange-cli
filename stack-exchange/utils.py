@@ -1,21 +1,21 @@
 from pathlib import Path
 
-import toml
+import yaml
 from markdownify import markdownify as md
 from rich.markdown import Markdown
 
 
 def html_to_markdown(html: str) -> Markdown:
-    """Parse html into rich markdown"""
+    """Parse html string into rich markdown"""
     return Markdown(md(html))
 
 
-def load_toml_file(file_path: str) -> dict:
-    """Load toml file into dict"""
+def load_yaml_file(file_path: str) -> dict:
+    """Load yaml file into dict"""
     path = Path(file_path)
     if not path.is_file():
-        raise FileNotFoundError(f"Failed to load toml file. File path: {path} doesn't exist.")
+        raise FileNotFoundError(f"Failed to load yaml file. File path: [{path}] doesn't exist.")
 
     with path.open() as f:
-        config = toml.load(f)
+        config = yaml.load(f, Loader=yaml.FullLoader)
     return config

@@ -3,4 +3,8 @@ class StackRequestError(IOError):
 
 
 class ZeroSearchResultsError(RuntimeError):
-    """Raise exception when a stack exchange request responds with zero search results"""
+    """Raise exception when a stack exchange request yields zero search results"""
+
+
+class RedisConnectionError(ConnectionError):
+    """Raise exception connection to a Redis DB fails"""

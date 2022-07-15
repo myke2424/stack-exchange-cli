@@ -1,6 +1,4 @@
-"""
-Stack exchange client interface used for searching!
-"""
+""" Stack Exchange client used for searching. """
 
 import json
 import logging
@@ -10,35 +8,19 @@ import requests
 
 from .cache import Cache
 from .errors import StackRequestError, ZeroSearchResultsError
-from .models import Answer, Question, SearchParams, SearchResult
+from .models import Answer, Question, SearchRequest, SearchResult
 
 logger = logging.getLogger(__name__)
 
 
-# TODO: This interface is breaking DIP i think... The abstraction has to many 'details', could be subject to change.
-# Might make more sense to have 'query', 'count', then **kwargs.
-# This way, the open/closed principle will stand, we can extend this while adding additional arguments if need be with kwargs
-# Fast search, press space to see more results!
-
-# If we're searching multiple websites, we can implement our own thread pool to do this..
-# Object Pool Pattern
-
-
-class SearchClient(ABC):
+class Searchable(ABC):
     @abstractmethod
-    def search(self, query: str, site: str, num: int, params: dict | None = None) -> list[SearchResult]:
-        """
-        Main interface used for searching.
-
-        :param query: Query string to search for
-        :param site: Websites we are searching on # TODO: Potentially change this to site(s), so we can do parallel searching.
-        :param num: Number of results
-        :param params: Optional parameters that can be used for search requests
-         """
+    def search(self, request: SearchRequest) -> list[SearchResult]:
+        """Main interface used for searching a stack exchange website."""
 
 
-class StackExchange(SearchClient):
-    """Wrapper class for the Stack Exchange API used for Search Only"""
+class StackExchange(Searchable):
+    """Wrapper class for the Stack Exchange API used for searching only"""
 
     _SEARCH_ENDPOINT = "/search/advanced"
     _ANSWERS_ENDPOINT = "/answers"
@@ -62,6 +44,7 @@ class StackExchange(SearchClient):
 
         response = requests.get(url, params)
         response_dict = response.json()
+        logger.debug(f"Made request to: {response.url}")
 
         if response_dict.get("error_message") is not None:
             raise StackRequestError(f"Request FAILED to url: {response.url} \n Error: {response_dict['error_message']}")
@@ -77,24 +60,20 @@ class StackExchange(SearchClient):
         return search_response
 
     def _get_answers(self, ids: list[str], params: dict) -> dict:
-        """GET /answers/{ids}. Semi-colon delimited Ids, Read more: https://api.stackexchange.com/docs/answers-by-ids"""
+        """GET /answers/{ids}. Semicolon delimited Ids, Read more: https://api.stackexchange.com/docs/answers-by-ids"""
         return self._make_get_request(url=f"{self.answers_url}/{';'.join(ids)}", params=params)
 
     def _get_questions(self, search_params: dict, num: int) -> list[Question]:
-        """
-        Get a list of questions by making a request to /search/advanced with the given search_params
-        """
+        """Get a list of questions by making a request to /search/advanced with the given search_params"""
 
         search_response = self._get_search_advanced(search_params)
 
         # We only care about the first 'n' results, where n is the number of results
-        questions = [
-            Question.from_response_item(item) for item in search_response["items"][:num]
-        ]
+        questions = [Question.from_response_item(item) for item in search_response["items"][:num]]
 
         return questions
 
-    def _get_accepted_answers(self, questions: list[Question], site: str) -> list[Answer]:
+    def _get_accepted_answers_for_questions(self, questions: list[Question], site: str) -> list[Answer]:
         """Get the top accepted answer for each question by making a request to /answers/{ids}"""
         accepted_answer_ids = [str(question.accepted_answer_id) for question in questions]
         answers_response = self._get_answers(
@@ -104,44 +83,36 @@ class StackExchange(SearchClient):
 
         return answers
 
-    def search(self, query: str, site: str, num: int = 1, params: dict | None = None) -> list[SearchResult]:
-        """ Main interface used for searching stack exchange. """
-        """
-        Psuedo code...
-        
-        If we are searching multiple sites...
-        We'll have 
-        
-        
-        """
-
-        # TODO: Make default parameters for search... or go back to searchparams dataclass.
-        search_params = {"q": query, "site": site, "filter": "withbody", "accepted": True} if params is None else {
-            "q": query, "site": site, **params}
-        questions = self._get_questions(search_params, num)
-        answers = self._get_accepted_answers(questions, site)
+    def search(self, request: SearchRequest) -> list[SearchResult]:
+        """Search stack exchange"""
+        questions = self._get_questions(request.to_json(), request.num)
+        answers = self._get_accepted_answers_for_questions(questions, request.site)
 
         return [SearchResult(question, answer) for (question, answer) in zip(questions, answers)]
 
 
-class CachedStackExchange(SearchClient):
+class CachedStackExchange(Searchable):
     """
-    Proxy structural design pattern. Use a cache as a proxy object to set and get search results for faster look up time.
+    Proxy structural design pattern.
+    Use a cache as a proxy object to set and get search results for faster look up time.
     """
 
     def __init__(self, stack_exchange_service: StackExchange, cache: Cache) -> None:
         self.cache = cache
         self.service = stack_exchange_service
 
-    def _prepare_search_url(self, search_params: dict) -> str:
+    def _prepare_search_uri(self, search_params: dict) -> str:
         """Prepare the search url to use it for the key when caching requests"""
         request = requests.Request(method="GET", url=self.service.search_url, params=search_params).prepare()
         return request.url
 
-    def search(self, query: str, site: str, num: int = 1, params: dict | None = None) -> list[SearchResult]:
-        search_params = {"q": query, "site": site, "accepted": True, "filter": "withbody"} if params is None else {
-            "q": query, "site": site, **params}
-        request_url = self._prepare_search_url(search_params)
+    def search(self, request: SearchRequest) -> list[SearchResult]:
+        """
+        Same interface for searching as the StackExchange service.
+        Check for cached request value, return value if cache hit, otherwise invoke search on stack exchange service
+        and return results
+        """
+        request_url = self._prepare_search_uri(request.to_json())
 
         cached_search_results = self.cache.get(request_url)
 
@@ -149,9 +120,10 @@ class CachedStackExchange(SearchClient):
             logger.info(f"Using cached results for url: {request_url}")
             return [SearchResult.from_json(sr_json) for sr_json in cached_search_results]
 
-        search_results = self.service.search(query, site, num, params)
-        search_results_dict = [sr.to_json() for sr in search_results]
+        search_results = self.service.search(requests)
+        search_results_json = [sr.to_json() for sr in search_results]
 
-        self.cache.set(key=request_url, value=search_results_dict)
+        # cache request URI as the key and serialized JSON list of search results the value.
+        self.cache.set(key=request_url, value=search_results_json)
 
         return search_results

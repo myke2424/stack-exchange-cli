@@ -1,0 +1,20 @@
+# These are optional fields, if you don't provide stack exchange API credentials,
+# the number of requests will be throttled. Read more here: https://api.stackexchange.com/docs
+api:
+  client_id: null
+  client_secret: null
+  api_key: null
+  default_site: "stackoverflow" # Change your default site to any available stack exchange website
+  version: 2.3
+
+# These are optional fields as well, if you want request caching you can hook the application up to a redis DB.
+redis:
+  host: null
+  port: null
+  password: null
+
+logging:
+  log_to_file: false
+  log_filename: "stackexchange.log"
+  log_level: "CRITICAL"
+

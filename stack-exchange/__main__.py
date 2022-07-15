@@ -1,88 +1,41 @@
-import logging
-
-from . import commands, utils
+from .app import App
 from .cache import RedisCache
-from .search import CachedStackExchange, StackExchange
-
-config_file_path = "config.toml"
-config = utils.load_toml_file(config_file_path)
-
-log_level = config["logging"]["level"]
-logging.basicConfig(level=log_level)
-logger = logging.getLogger(__name__)
-logger.setLevel(log_level)
-
-"""
-Builder Pattern PoC for Building a Search Request
+from .models import Config
+from .search import (CachedStackExchange, Searchable, SearchRequest,
+                     StackExchange)
+from .terminal import Terminal
 
 
-sr = SearchRequestBuilder(site="stackoverflow")
-                    .query("Merge two dicts python")
-                    .tags("python", "dictionary")
-                    .count(5)
-                    .accepted() 
-                            
-This doesn't feel idiomatic...
-
-Maybe Builder Pattern for SearchResult
-
-search_result = SearchResultBuilder()
-                        .with_question()
-                        .with_accepted_answer()
-                        .with_non_accepted_answers()
-                        .with_comments()
-
-
-"""
-
-from rich.markdown import Markdown
-from rich.console import Console
-from rich.text import Text
-from rich import print as p
+def get_stack_exchange_service(config: Config) -> Searchable:
+    """
+    Get stack exchange object used for searching.
+    If redis configuration is set in config.yaml, cache search requests with proxy object.
+    """
+    stack_exchange = StackExchange(config.api.version)
+    if config.redis.host and config.redis.port and config.redis.password:
+        redis_db = RedisCache(**config.redis.__dict__)
+        return CachedStackExchange(cache=redis_db, stack_exchange_service=stack_exchange)
+    return stack_exchange
 
 
 def main():
-    stack_exchange = StackExchange()
-    console = Console()
-    # Create cached search client if redis config
-    # Load config file into immutable dataclass might be better after all...
-    if config["redis"]["host"] and config["redis"]["port"] and config["redis"]["password"]:
-        redis_cache = RedisCache(**config["redis"])
-        stack_exchange = CachedStackExchange(stack_exchange_service=StackExchange(), cache=redis_cache)
+    """Main function to run the application"""
+    app = App()
+    stack_exchange = get_stack_exchange_service(app.config)
 
-    args = commands.get_cmd_args()
-    logger.info(f"Command line arguments: {args}")  # TODO: Change to debug, maybe add verbose log flag
-    # INTERACTIVE SEARCH START
+    search_request = (
+        SearchRequest.Builder(app.args.query, app.args.site)
+        .with_tags(app.args.tags)
+        .accepted_only()
+        .n_results(app.args.num)
+        .build()
+    )
 
-    # Right now i have to do --i=true, change it so i just do -i and and the flag will be true...
-    if args.interactive:
-        search_results = stack_exchange.search(query=args.query, site=args.site, num=10)
-        p(f"\n[bold green]Search results for query: {''.join(args.query)} \n")
-        for idx, result in enumerate(search_results):
-            p(f"{idx + 1}.[bold red]{result.question.title}")
+    search_results = stack_exchange.search(search_request)
 
-        print("\n")
-        selected_q = int(input("Enter question number to see answer: "))
+    terminal = Terminal(interactive_search=app.args.interactive)
+    terminal.display(app.args.query, search_results)
 
-        p(f"[bold red]Question: [bold green]{search_results[selected_q - 1].question.title} \n")
-        console.print(utils.html_to_markdown(search_results[selected_q - 1].question.body))
-
-        p(f"\n[bold red]Top Answer: [bold red] \n")
-        console.print(utils.html_to_markdown(search_results[selected_q - 1].answer.body))
-
-    # INTERACTIVE SEARCH END
-    else:
-        # FAST SEARCH START
-        search_results = stack_exchange.search(query=args.query, site=args.site)
-
-        p(f"[bold red]Question: [bold green]{search_results[0].question.title} \n")
-        console.print(utils.html_to_markdown(search_results[0].question.body))
-
-        p(f"[bold red]Top Answer: [bold red] \n")
-        console.print(utils.html_to_markdown(search_results[0].answer.body))
-        # FAST SEARCH END
-
-        p(f"\n[bold green]Press [SPACE] to see more results, or any other key to exit [bold red] \n")
 
 if __name__ == "__main__":
     main()
