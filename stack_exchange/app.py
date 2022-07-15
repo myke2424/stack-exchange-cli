@@ -46,6 +46,9 @@ class App(Singleton):
         if self.config.logging.log_to_file:
             handlers.append(logging.FileHandler(self.config.logging.log_filename))
 
+        if self.args.verbose:
+            log_level = logging.DEBUG
+
         logging.basicConfig(level=log_level, format="%(asctime)s [%(levelname)s] %(message)s", handlers=handlers)
 
     def get_stack_exchange_service(self) -> Searchable:

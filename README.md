@@ -112,6 +112,12 @@ python3.10 -m stack_exchange -q="Segmentation fault cause" -i
 python3.10 -m stack_exchange -q="Segmentation fault cause" -i -n=20
 ```
 
+**Verbose logging flag** [*OPTIONAL*]
+```bash
+# -n or --num
+python3.10 -m stack_exchange -q="Segmentation fault cause" -v
+```
+
 ## Configuration
 
 The application can be optionally configured using the `config.yaml` file in the root directory
