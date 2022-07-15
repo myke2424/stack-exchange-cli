@@ -4,7 +4,7 @@ Search stack exchange websites in your terminal!
 
 With beautiful terminal formatting using Rich.
 
-![Demo](https://media.giphy.com/media/TsWaWpgD0S4bP3SHv3/giphy.gif)
+![Demo](https://media.giphy.com/media/m07D8dv95bb7iYqcKN/giphy.gif)
 
 ## How it works
 
