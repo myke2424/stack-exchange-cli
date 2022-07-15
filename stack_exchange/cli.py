@@ -72,7 +72,7 @@ class Terminal:
                 case "q":
                     sys.exit(0)
                 case other:
-                    print("Invalid Command!")
+                    print(f"{other} - Invalid Command!")
 
     @staticmethod
     def _print_result_titles(query: str, search_results: list[SearchResult]) -> None:
@@ -87,7 +87,7 @@ class Terminal:
         rprint(f"\n[bold red]Question: [bold green]{search_result.question.title} \n")
         self.__console.print(utils.html_to_markdown(search_result.question.body))
 
-        rprint(f"\n[bold red]Top Answer: [bold red] \n")
+        rprint("\n[bold red]Top Answer: [bold red] \n")
         self.__console.print(utils.html_to_markdown(search_result.answer.body))
         print("\n")
         rprint(f"Question link: {search_result.question.link}")
