@@ -1,8 +1,8 @@
 import sys
 
 from .app import App
+from .cli import Terminal
 from .search import SearchRequest
-from .terminal import Terminal
 
 
 def main():
