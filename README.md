@@ -41,6 +41,13 @@ Or run the `scripts/install.sh` script in the **root directory**
 sudo bash install.sh
 ```
 
+Or build using make
+
+```
+# run in root directory
+make
+```
+
 ## Usage
 
 ### Fast Search
