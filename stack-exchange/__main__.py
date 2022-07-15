@@ -8,9 +8,7 @@ from .terminal import Terminal
 from .search import SearchRequest
 from .search import Searchable
 from .models import Config, RedisConfig
-
-CONFIG_FILE_PATH = "config.yaml"
-N_RESULTS = 20
+from .app import App
 
 
 def get_stack_exchange_service(config: Config) -> Searchable:
@@ -27,18 +25,18 @@ def get_stack_exchange_service(config: Config) -> Searchable:
 
 def main():
     """Main function to run the application"""
-    args = commands.get_cmd_args()
-    config = Config.from_yaml_file(CONFIG_FILE_PATH)
-    stack_exchange = get_stack_exchange_service(config)
+    app = App()
+    stack_exchange = get_stack_exchange_service(app.config)
 
     search_request = (
-        SearchRequest.Builder(args.query, args.site).with_tags(args.tags).accepted_only().n_results(N_RESULTS).build()
+        SearchRequest.Builder(app.args.query, app.args.site).with_tags(app.args.tags).accepted_only().n_results(
+            20).build()
     )
 
     search_results = stack_exchange.search(search_request)
 
-    terminal = Terminal(interactive_search=args.interactive)
-    terminal.display(args.query, search_results)
+    terminal = Terminal(interactive_search=app.args.interactive)
+    terminal.display(app.args.query, search_results)
 
 
 if __name__ == "__main__":
