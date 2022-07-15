@@ -27,7 +27,7 @@ def main():
         SearchRequest.Builder(app.args.query, app.args.site)
         .with_tags(app.args.tags)
         .accepted_only()
-        .n_results(20)
+        .n_results(app.args.num)
         .build()
     )
 

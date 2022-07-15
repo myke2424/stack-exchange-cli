@@ -44,11 +44,19 @@ class InteractiveCommand(Command):
         )
 
 
+class NumCommand(Command):
+    """Number of results to collect when interactive searching [OPTIONAL]"""
+
+    def prepare_parser(self, parser: argparse.ArgumentParser) -> None:
+        parser.add_argument("-n", "--num", help=self.__doc__, default=20)
+
+
 _COMMANDS: List[Command] = [
     QueryCommand(),
     SiteCommand(),
     TagsCommand(),
     InteractiveCommand(),
+    NumCommand(),
 ]
 
 
