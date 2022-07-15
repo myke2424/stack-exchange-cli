@@ -1,8 +1,10 @@
 import argparse
 import logging
 
+from .cache import RedisCache
 from .commands import get_cmd_args
 from .models import Config
+from .search import CachedStackExchange, Searchable, StackExchange
 
 
 class Singleton:
@@ -44,3 +46,14 @@ class App(Singleton):
             handlers.append(logging.FileHandler(self.config.logging.log_filename))
 
         logging.basicConfig(level=log_level, format="%(asctime)s [%(levelname)s] %(message)s", handlers=handlers)
+
+    def get_stack_exchange_service(self) -> Searchable:
+        """
+        Get stack exchange object used for searching.
+        If redis configuration is set in config.yaml, cache search requests with proxy object.
+        """
+        stack_exchange = StackExchange(self.config.api.version)
+        if self.config.redis.host and self.config.redis.port and self.config.redis.password:
+            redis_db = RedisCache(**self.config.redis.__dict__)
+            return CachedStackExchange(cache=redis_db, stack_exchange_service=stack_exchange)
+        return stack_exchange
