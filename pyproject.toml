@@ -1,8 +1,10 @@
 [tool.poetry]
-name = "stack-exchange-cli"
+name = "stack_exchange"
 version = "0.1.0"
-description = "Stack Exchange CLI "
+description = "Stack Exchange CLI for searching"
 authors = ["Mike Davidson"]
+license = "MIT"
+readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.10"
@@ -17,6 +19,13 @@ pytest = "^7.1.2"
 black = "^22.3.0"
 flake8 = "^4.0.1"
 isort = "^5.10.1"
+
+[tool.black]
+line-length = 120
+
+[tool.isort]
+line_length = 120
+profile = "black"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
