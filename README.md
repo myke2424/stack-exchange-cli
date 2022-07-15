@@ -1,6 +1,6 @@
 
 # Stack Exchange Search CLI
-[![PyPI](https://img.shields.io/pypi/v/stack-exchange-cli?color=brightgreen) ![Build status](https://github.com/myke2424/stack-exchange-cli/actions/workflows/build.yaml/badge.svg)
+![PyPI](https://img.shields.io/pypi/v/stack-exchange-cli?color=brightgreen) ![Build status](https://github.com/myke2424/stack-exchange-cli/actions/workflows/build.yaml/badge.svg)
 
 Search stack exchange websites in your terminal!
 
