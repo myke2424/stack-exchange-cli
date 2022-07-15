@@ -1,10 +1,15 @@
 [tool.poetry]
-name = "stack_exchange"
+name = "stack-exchange-cli"
 version = "0.1.0"
 description = "Stack Exchange CLI for searching"
 authors = ["Mike Davidson"]
 license = "MIT"
 readme = "README.md"
+include = ["config.yaml"]
+exclude = ["tests", "scripts"]
+packages = [
+    { include = "stack_exchange" }
+]
 
 [tool.poetry.dependencies]
 python = "^3.10"
