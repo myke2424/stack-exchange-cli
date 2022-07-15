@@ -54,7 +54,7 @@ class RedisCache(Cache):
 
     def set(self, key: str, value: Any) -> None:
         # if value is json, serialize it to a json string
-        logger.debug(f"Writing to cache - key: {key} - value: {value}")
+        logger.debug(f"Writing to cache - key: {key}")
         if isinstance(value, (dict, list)):
             value = json.dumps(value)
         self.__db.set(key, value)

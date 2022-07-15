@@ -58,7 +58,7 @@ class App(Singleton):
         Get stack exchange object used for searching.
         If redis configuration is set in config.yaml, cache search requests with proxy object.
         """
-        stack_exchange = StackExchange(self.config.api.version)
+        stack_exchange = StackExchange(self.config.api)
         if self.config.redis.host and self.config.redis.port and self.config.redis.password:
             self.__logger.info("Using cached stack exchange service")
             redis_db = RedisCache(**self.config.redis.__dict__)
