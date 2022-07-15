@@ -1,14 +1,9 @@
-import argparse
-import logging
-
-from . import commands, utils
-from .cache import RedisCache
-from .search import CachedStackExchange, StackExchange
-from .terminal import Terminal
-from .search import SearchRequest
-from .search import Searchable
-from .models import Config, RedisConfig
 from .app import App
+from .cache import RedisCache
+from .models import Config
+from .search import (CachedStackExchange, Searchable, SearchRequest,
+                     StackExchange)
+from .terminal import Terminal
 
 
 def get_stack_exchange_service(config: Config) -> Searchable:
@@ -29,8 +24,11 @@ def main():
     stack_exchange = get_stack_exchange_service(app.config)
 
     search_request = (
-        SearchRequest.Builder(app.args.query, app.args.site).with_tags(app.args.tags).accepted_only().n_results(
-            20).build()
+        SearchRequest.Builder(app.args.query, app.args.site)
+        .with_tags(app.args.tags)
+        .accepted_only()
+        .n_results(20)
+        .build()
     )
 
     search_results = stack_exchange.search(search_request)

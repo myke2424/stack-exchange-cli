@@ -1,14 +1,14 @@
 """ Terminal UI """
 
 import logging
+import sys
+import webbrowser
 
 from rich import print as rprint
 from rich.console import Console
+
 from . import utils
-import sys
 from .models import SearchResult
-import logging
-import webbrowser
 
 logger = logging.getLogger(__name__)
 

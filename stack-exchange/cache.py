@@ -1,9 +1,11 @@
 import json
 import logging
 from abc import ABC, abstractmethod
-from .errors import RedisConnectionError
-import redis
 from typing import Any
+
+import redis
+
+from .errors import RedisConnectionError
 
 logger = logging.getLogger(__name__)
 

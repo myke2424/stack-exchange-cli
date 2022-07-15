@@ -40,7 +40,7 @@ class InteractiveCommand(Command):
             "--interactive",
             help=self.__doc__,
             required=False,
-            action='store_true',
+            action="store_true",
         )
 
 

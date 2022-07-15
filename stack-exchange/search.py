@@ -6,9 +6,9 @@ from abc import ABC, abstractmethod
 
 import requests
 
-from .cache import Cache, RedisCache
+from .cache import Cache
 from .errors import StackRequestError, ZeroSearchResultsError
-from .models import Answer, Question, SearchResult, SearchRequest, Config
+from .models import Answer, Question, SearchRequest, SearchResult
 
 logger = logging.getLogger(__name__)
 

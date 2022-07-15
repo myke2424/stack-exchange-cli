@@ -1,13 +1,14 @@
-import logging
-from .models import Config
-from .commands import get_cmd_args
 import argparse
+import logging
+
+from .commands import get_cmd_args
+from .models import Config
 
 
 class Singleton:
     _instance = None
 
-    def __new__(cls, *args, **kwargs) -> 'Singleton':
+    def __new__(cls, *args, **kwargs) -> "Singleton":
         if cls._instance is None:
             cls._instance = super(Singleton, cls).__new__(cls, *args, **kwargs)
         return cls._instance
@@ -18,6 +19,7 @@ class App(Singleton):
     App singleton contains all the read-only state data that must be accessible across the application.
     Configuration data includes - (redis, api, logging, cmd line arguments)
     """
+
     _CONFIG_FILE_PATH = "config.yaml"
 
     def __init__(self) -> None:
@@ -41,8 +43,4 @@ class App(Singleton):
         if self.config.logging.log_to_file:
             handlers.append(logging.FileHandler(self.config.logging.log_filename))
 
-        logging.basicConfig(
-            level=log_level,
-            format="%(asctime)s [%(levelname)s] %(message)s",
-            handlers=handlers
-        )
+        logging.basicConfig(level=log_level, format="%(asctime)s [%(levelname)s] %(message)s", handlers=handlers)
