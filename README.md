@@ -114,7 +114,7 @@ python3.10 -m stack_exchange -q="Segmentation fault cause" -i -n=20
 
 **Verbose logging flag** [*OPTIONAL*]
 ```bash
-# -n or --num
+# -v or --verbose
 python3.10 -m stack_exchange -q="Segmentation fault cause" -v
 ```
 

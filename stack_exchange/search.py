@@ -8,7 +8,7 @@ import requests
 
 from .cache import Cache
 from .errors import StackRequestError, ZeroSearchResultsError
-from .models import Answer, Question, SearchRequest, SearchResult
+from .models import Answer, Question, SearchRequest, SearchResult, StackExchangeApiConfig
 
 logger = logging.getLogger(__name__)
 
@@ -25,9 +25,10 @@ class StackExchange(Searchable):
     _SEARCH_ENDPOINT = "/search/advanced"
     _ANSWERS_ENDPOINT = "/answers"
 
-    def __init__(self, version: str = "2.3") -> None:
-        self.__version = version
-        self.url = f"https://api.stackexchange.com/{version}"
+    def __init__(self, api_config: StackExchangeApiConfig | None = None) -> None:
+        self.__version = api_config.version or "2.3"
+        self.__api_config = api_config
+        self.url = f"https://api.stackexchange.com/{self.__version}"
 
     @property
     def search_url(self):
@@ -37,10 +38,13 @@ class StackExchange(Searchable):
     def answers_url(self):
         return self.url + self._ANSWERS_ENDPOINT
 
-    @staticmethod
-    def _make_get_request(url: str, params: dict) -> dict:
+    def _make_get_request(self, url: str, params: dict) -> dict:
         """Make a GET request to the given stack exchange endpoint with the provided query params"""
         logger.debug(f"Making GET request to: {url}: \n params={json.dumps(params, indent=2)}")
+
+        # Use key to receive a higher request quota
+        if self.__api_config.api_key is not None:
+            params["key"] = self.__api_config.api_key
 
         response = requests.get(url, params)
         response_dict = response.json()

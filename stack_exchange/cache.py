@@ -14,8 +14,7 @@ class Cache(ABC):
     """
     An interface for a cache keyed by a string with any data type as the value.
 
-    Derived classes can implement their own data serialization/deserialization to conform
-    to the type-specific constraints of the cache being used.
+    Derived classes can implement their own data serialization/deserialization.
     """
 
     @abstractmethod
@@ -55,7 +54,7 @@ class RedisCache(Cache):
 
     def set(self, key: str, value: Any) -> None:
         # if value is json, serialize it to a json string
-        logger.debug(f"Writing to cache - key: {key} - value: {value}")
+        logger.debug(f"Writing to cache - key: {key}")
         if isinstance(value, (dict, list)):
             value = json.dumps(value)
         self.__db.set(key, value)

@@ -31,6 +31,8 @@ class App(Singleton):
         self.__logger = logging.getLogger(__name__)
         self._configure_logger()
 
+        self.__logger.debug(f"Command Arguments: {self.__args}")
+
     @property
     def config(self) -> Config:
         return self.__config
@@ -56,8 +58,9 @@ class App(Singleton):
         Get stack exchange object used for searching.
         If redis configuration is set in config.yaml, cache search requests with proxy object.
         """
-        stack_exchange = StackExchange(self.config.api.version)
+        stack_exchange = StackExchange(self.config.api)
         if self.config.redis.host and self.config.redis.port and self.config.redis.password:
+            self.__logger.info("Using cached stack exchange service")
             redis_db = RedisCache(**self.config.redis.__dict__)
             return CachedStackExchange(cache=redis_db, stack_exchange_service=stack_exchange)
         return stack_exchange
