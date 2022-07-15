@@ -2,7 +2,6 @@
 
 import argparse
 from abc import ABC
-from typing import List
 
 
 class Command(ABC):
@@ -48,15 +47,23 @@ class NumCommand(Command):
     """Number of results to display when interactive searching [OPTIONAL]"""
 
     def prepare_parser(self, parser: argparse.ArgumentParser) -> None:
-        parser.add_argument("-n", "--num", help=self.__doc__, default=20)
+        parser.add_argument("-n", "--num", help=self.__doc__, default=20, required=False)
 
 
-_COMMANDS: List[Command] = [
+class VerboseLoggingCommand(Command):
+    """Verbose logging flag"""
+
+    def prepare_parser(self, parser: argparse.ArgumentParser) -> None:
+        parser.add_argument("-v", "--verbose", help=self.__doc__, action="store_true", required=False)
+
+
+_COMMANDS: list[Command] = [
     QueryCommand(),
     SiteCommand(),
     TagsCommand(),
     InteractiveCommand(),
     NumCommand(),
+    VerboseLoggingCommand(),
 ]
 
 
@@ -65,7 +72,7 @@ def get_cmd_args() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Stack Exchange Command Line Search Client")
 
     for command in _COMMANDS:
-        assert command.__class__.__name__.endswith("Command")
+        assert isinstance(command, Command)
         command.prepare_parser(parser)
 
     args = parser.parse_args()
