@@ -1,5 +1,5 @@
 # Stack Exchange Search CLI
-[![PyPI](https://img.shields.io/pypi/v/stack-exchange-cli?color=brightgreen) ![Build status](https://github.com/myke2424/stack-exchange-cli/actions/workflows/build.yaml/badge.svg)
+![PyPI](https://img.shields.io/pypi/v/stack-exchange-cli?color=brightgreen)](https://pypi.org/project/stack-exchange-cli/) ![Build status](https://github.com/myke2424/stack-exchange-cli/actions/workflows/build.yaml/badge.svg)
 
 Search stack exchange websites in your terminal!
 
@@ -81,7 +81,7 @@ The above command uses fast search, which fetches the top-voted question and ans
 python3.10 -m stack_exchange -q="How to merge two dictionaries"
 ```
 
-**Stack exchange site** to search on[*OPTIONAL*] - default=stackoverflow \
+**Stack exchange site** to search on [*OPTIONAL*] - default=stackoverflow \
 View all sites here: (https://stackexchange.com/sites)
 
 ```bash
@@ -97,7 +97,7 @@ python3.10 -m stack_exchange -q="Segmentation fault cause" -t="c c++ rust"
 ```
 
 **Interactive Search** [*OPTIONAL*] \
-It will allow the user to interact while searching, analogous to browsing stackoverflow questions in your browser,
+Allow the user to interact while searching, analogous to browsing stackoverflow questions in your browser,
 except in the terminal!
 
 ```bash
