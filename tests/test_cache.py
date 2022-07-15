@@ -1,5 +1,7 @@
 import pytest
 
+from .fixtures import cache
+
 
 def test_cache_hit(cache):
     cache.set("APPLES", "BANANAS")

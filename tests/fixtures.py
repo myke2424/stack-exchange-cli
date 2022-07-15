@@ -46,6 +46,26 @@ class TestStackExchangeClient(Searchable):
         return [SearchResult(question, answer) for (question, answer) in zip(questions, answers)]
 
 
+class TestCachedStackExchangeClient:
+    def __init__(self):
+        self.cache = Cache()
+        self.service = TestStackExchangeClient()
+
+    def search(self, request: SearchRequest) -> list[SearchResult]:
+        request_url = "cached_url_key"
+        cached_search_results = self.cache.get(request_url)
+
+        if cached_search_results is not None:
+            return [SearchResult.from_json(sr_json) for sr_json in cached_search_results]
+
+        search_results = self.service.search(request)
+        search_results_json = [sr.to_json() for sr in search_results]
+
+        self.cache.set(key=request_url, value=search_results_json)
+
+        return search_results
+
+
 @pytest.fixture
 def search_request():
     request = (
@@ -63,6 +83,11 @@ def stack_exchange():
     return TestStackExchangeClient()
 
 
+@pytest.fixture()
+def cached_stack_exchange():
+    return TestCachedStackExchangeClient()
+
+
 @pytest.fixture
 def cache():
     return TestCache()
@@ -71,3 +96,8 @@ def cache():
 @pytest.fixture
 def error_stack_exchange_http_response():
     return {"error_id": 502, "error_message": "too many requests from this IP", "error_name": "throttle_violation"}
+
+
+@pytest.fixture
+def stack_search_response():
+    pass

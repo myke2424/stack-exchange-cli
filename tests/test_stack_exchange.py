@@ -1,10 +1,15 @@
-from .fixtures import (error_stack_exchange_http_response, search_request,
+from .fixtures import (cached_stack_exchange,
+                       error_stack_exchange_http_response, search_request,
                        stack_exchange)
 
 
-def test_search(stack_exchange, search_request):
+def test_stack_exchange_search(stack_exchange, search_request):
     search_results = stack_exchange.search(search_request)
     assert len(search_results) == 2
+
+
+def cached_stack_exchange_search(cached_stack_exchange):
+    pass
 
 
 def test_get_request_stack_request_error(error_stack_exchange_http_response):

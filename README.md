@@ -35,7 +35,7 @@ Or use **poetry** to install dependencies (https://python-poetry.org/docs/)
 poetry install
 ```
 
-Or run the `install.sh` script in the **root directory**
+Or run the `scripts/install.sh` script in the **root directory**
 
 ```bash
 sudo bash install.sh
