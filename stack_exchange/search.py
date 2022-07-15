@@ -120,7 +120,7 @@ class CachedStackExchange(Searchable):
             logger.info(f"Using cached results for url: {request_url}")
             return [SearchResult.from_json(sr_json) for sr_json in cached_search_results]
 
-        search_results = self.service.search(requests)
+        search_results = self.service.search(request)
         search_results_json = [sr.to_json() for sr in search_results]
 
         # cache request URI as the key and serialized JSON list of search results the value.

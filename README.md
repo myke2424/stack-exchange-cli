@@ -35,16 +35,15 @@ Or use **poetry** to install dependencies (https://python-poetry.org/docs/)
 poetry install
 ```
 
-Or run the `scripts/install.sh` script in the **root directory**
+Or run the `scripts/install.sh` script - in the **root directory**
 
 ```bash
-sudo bash install.sh
+sudo bash scripts/install.sh
 ```
 
-Or build using make
+Or build using make - in the **root directory**
 
 ```
-# run in root directory
 make
 ```
 
