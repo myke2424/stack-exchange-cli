@@ -1,6 +1,7 @@
 """ Terminal UI """
 
 import logging
+import os
 import sys
 import webbrowser
 from enum import Enum
@@ -9,7 +10,7 @@ from rich import print as rprint
 from rich.console import Console
 
 from . import utils
-from .models import SearchResult
+from .models import Answer, Question, SearchResult
 
 logger = logging.getLogger(__name__)
 
@@ -26,6 +27,7 @@ class Terminal:
     def __init__(self, interactive_search: bool) -> None:
         self.__console = Console()
         self.__interactive_search = interactive_search
+        self.__terminal_size = os.get_terminal_size()
 
     def display(self, query: str, search_results: list[SearchResult]) -> None:
         """Main interface to display terminal output and interaction"""
@@ -85,18 +87,27 @@ class Terminal:
     @staticmethod
     def _print_result_titles(query: str, search_results: list[SearchResult]) -> None:
         """Print all the question titles from search results to the console"""
-        rprint(f"\n[bold green]Search results for query: '{''.join(query)}'\n")
+        rprint(f"\n[bold green]Search results for query:[/bold green] [red]'{''.join(query)}'\n")
         for idx, result in enumerate(search_results):
             rprint(f"{idx + 1}. [bold magenta]{result.question.title}")
         print("\n")
 
+    def _print_question(self, question: Question) -> None:
+        rprint("[bold green]-" * self.__terminal_size.columns)
+        self.__console.print(utils.html_to_markdown("<h1>Question</h1>"), style="green")
+        rprint(f"\n[bold red][bold green]{question.title} \n")
+        self.__console.print(utils.html_to_markdown(question.body))
+        rprint("[bold green]-" * self.__terminal_size.columns)
+
+    def _print_answer(self, answer: Answer) -> None:
+        rprint("[bold blue]-" * self.__terminal_size.columns)
+        self.__console.print(utils.html_to_markdown("<h1> Answer </h1>"), style="blue")
+        print("\n")
+        self.__console.print(utils.html_to_markdown(answer.body))
+        rprint("[bold blue]-" * self.__terminal_size.columns)
+
     def _print_result(self, search_result: SearchResult) -> None:
         """Pretty print a search result to the console using Rich Formatting"""
-        rprint(f"\n[bold red]Question: [bold green]{search_result.question.title} \n")
-        self.__console.print(utils.html_to_markdown(search_result.question.body))
-
-        rprint("\n[bold red]Top Answer: [bold red] \n")
-        self.__console.print(utils.html_to_markdown(search_result.answer.body))
-        print("\n")
-        rprint(f"Question link: {search_result.question.link}")
-        print("\n")
+        self._print_question(search_result.question)
+        self._print_answer(search_result.answer)
+        rprint(f"[bold green]Question link:[/bold green] {search_result.question.link}")
