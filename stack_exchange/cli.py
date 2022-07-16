@@ -3,6 +3,7 @@
 import logging
 import sys
 import webbrowser
+from enum import Enum
 
 from rich import print as rprint
 from rich.console import Console
@@ -11,6 +12,12 @@ from . import utils
 from .models import SearchResult
 
 logger = logging.getLogger(__name__)
+
+
+class UserCommand(Enum):
+    OPEN_BROWSER = "o"
+    GO_BACK = "g"
+    QUIT = "q"
 
 
 class Terminal:
@@ -29,7 +36,7 @@ class Terminal:
 
         self._interactive_search_handler(query, search_results)
 
-    def _interactive_search_handler(self, query: str, search_results: list[SearchResult]):
+    def _interactive_search_handler(self, query: str, search_results: list[SearchResult]) -> None:
         """Handle user input and display results to console for interactive mode"""
         while True:
             self._print_result_titles(query, search_results)
@@ -61,18 +68,19 @@ class Terminal:
     def _command_input_handler(search_result: SearchResult) -> None:
         """Prompt user input for a command in interactive mode and handle the input"""
         while True:
-            command = input("")
+            try:
+                command = input("")
 
-            match command:
-                case "o":
-                    webbrowser.open(search_result.question.link)
-                    continue
-                case "g":
-                    break
-                case "q":
-                    sys.exit(0)
-                case other:
-                    print(f"{other} - Invalid Command!")
+                match UserCommand(command):
+                    case UserCommand.OPEN_BROWSER:
+                        webbrowser.open(search_result.question.link)
+                        continue
+                    case UserCommand.GO_BACK:
+                        break
+                    case UserCommand.QUIT:
+                        sys.exit(0)
+            except ValueError:
+                print(f"'{command}'is an invalid command!")
 
     @staticmethod
     def _print_result_titles(query: str, search_results: list[SearchResult]) -> None:
