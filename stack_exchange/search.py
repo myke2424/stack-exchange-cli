@@ -43,7 +43,7 @@ class StackExchange(Searchable):
         logger.debug(f"Making GET request to: {url}: \n params={json.dumps(params, indent=2)}")
 
         # Use key to receive a higher request quota
-        if self.__api_config.api_key is not None:
+        if self.__api_config is not None and self.__api_config.api_key:
             params["key"] = self.__api_config.api_key
 
         response = requests.get(url, params)
@@ -69,10 +69,8 @@ class StackExchange(Searchable):
 
     def _get_questions(self, search_params: dict, num: int) -> list[Question]:
         """Get a list of questions by making a request to /search/advanced with the given search_params"""
-
         search_response = self._get_search_advanced(search_params)
-
-        # We only care about the first 'n' results, where n is the number of results
+        # We only care about the first 'n' results
         questions = [Question.from_response_item(item) for item in search_response["items"][:num]]
 
         return questions

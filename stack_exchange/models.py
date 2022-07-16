@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from . import utils
 
 
-@dataclass
+@dataclass(frozen=True)
 class SearchRequest:
     """
     Model representation of a search GET request to the stack exchange
@@ -167,13 +167,11 @@ class StackExchangeApiConfig:
     """
     Model representation of the Stack Exchange API Config
     API Configuration is optional, if you don't provide stack exchange API
-    credentials, the number of requests will be throttled.
+    key, the number of requests will be throttled.
 
-    Read more: (https://api.stackexchange.com/docs/authentication)
+    Read more: (https://api.stackexchange.com/docs/throttle)
     """
 
-    client_id: str
-    client_secret: str
     api_key: str
     default_site: str
     version: str

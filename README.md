@@ -124,8 +124,8 @@ The application can be optionally configured using the `config.yaml` file in the
 
 ### API Configuration
 
-Fill out yaml `api` values with stack exchange API credentials to prevent request throttling. Read more
-here:  (https://api.stackexchange.com/docs)
+Fill out yaml `api` values with a stack exchange API key to prevent request throttling. Read more
+here:  (https://api.stackexchange.com/docs/throttle)
 
 ### Redis Configuration
 
