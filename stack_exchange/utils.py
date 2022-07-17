@@ -1,10 +1,10 @@
 import datetime
 from pathlib import Path
 
+import toml
 import yaml
 from markdownify import markdownify as md
 from rich.markdown import Markdown
-import toml
 
 
 def html_to_markdown(html: str) -> Markdown:
@@ -29,8 +29,8 @@ def epoch_time_to_datetime_str(timestamp: int) -> str:
 
 
 def get_version_from_pyproject_toml() -> str:
-    """ Parse pyproject.toml for version # """
-    path = Path(__file__).resolve().parents[1] / 'pyproject.toml'
+    """Parse pyproject.toml for version #"""
+    path = Path(__file__).resolve().parents[1] / "pyproject.toml"
     with path.open() as p:
         pyproject = toml.load(p)
-    return pyproject['tool']['poetry']['version']
+    return pyproject["tool"]["poetry"]["version"]
