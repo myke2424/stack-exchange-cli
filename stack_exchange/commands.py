@@ -50,6 +50,22 @@ class NumCommand(Command):
         parser.add_argument("-n", "--num", help=self.__doc__, default=30, required=False)
 
 
+class SortByCommand(Command):
+    """Sort the search results by the following method types [OPTIONAL]
+    'votes' (score), 'creation', 'relevance', 'activity'
+    """
+
+    def prepare_parser(self, parser: argparse.ArgumentParser) -> None:
+        parser.add_argument(
+            "-sb",
+            "--sortby",
+            help=self.__doc__,
+            choices=["votes", "creation", "relevance", "activity"],
+            default="votes",
+            required=False,
+        )
+
+
 class VerboseLoggingCommand(Command):
     """Verbose logging flag"""
 
@@ -64,6 +80,7 @@ _COMMANDS: list[Command] = [
     InteractiveCommand(),
     NumCommand(),
     VerboseLoggingCommand(),
+    SortByCommand(),
 ]
 
 

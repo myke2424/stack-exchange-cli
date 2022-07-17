@@ -16,6 +16,7 @@ def main():
         .with_tags(app.args.tags)
         .accepted_only()
         .n_results(app.args.num)
+        .sort_by(app.args.sortby)
         .build()
     )
 
