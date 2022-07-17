@@ -89,7 +89,10 @@ class Terminal:
         """Print all the question titles from search results to the console"""
         rprint(f"\n[bold green]Search results for query:[/bold green] [red]'{''.join(query)}'\n")
         for idx, result in enumerate(search_results):
-            rprint(f"{idx + 1}. [bold magenta]{result.question.title}")
+            date = utils.epoch_time_to_datetime_str(result.question.creation_date)
+            rprint(
+                f"{idx + 1}. [bold magenta]{result.question.title}[/bold magenta][bold green] [{date} | {result.question.score} votes]"
+            )
         print("\n")
 
     def _print_question(self, question: Question) -> None:
