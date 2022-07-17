@@ -95,7 +95,7 @@ class SearchRequest:
                 "site": self.__site,
                 "accepted": self.__accepted,
                 "filter": self.__filter,
-                "sort_by": self.__sort_by
+                "sort_by": self.__sort_by,
             }
 
             return SearchRequest(**request)

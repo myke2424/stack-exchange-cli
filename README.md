@@ -8,7 +8,16 @@ With beautiful terminal formatting using Rich.
 
 ![Demo](https://media.giphy.com/media/TsWaWpgD0S4bP3SHv3/giphy.gif)
 
-## How it works
+
+## Table of Contents
+1. [How it works](#how-it-works)
+2. [Install](#install)
+3. [Usage](#usage)
+4. [Command Line Arguments](#cli-args)
+5. [Configuration](#config)
+6. [Testing](#testing)
+
+## How it works  <a name="how-it-works"></a>
 
 Displays the highest up-voted question and top answer for your search request \
 *Inspired by*: https://github.com/chubin/cheat.sh
@@ -24,8 +33,7 @@ Displays the highest up-voted question and top answer for your search request \
 ##### Requirements
 
 * Python 3.10 or higher
-
-#####       
+ 
 
 ### Main Installation
 Just pip install it!
@@ -69,7 +77,7 @@ python3.10 -m pip install stack-exchange-cli
   python3.10 -m pip install dist/stack_exchange_cli*.whl
   ```
 
-## Usage
+## Usage  <a name="usage"></a>
 
 ### Fast Search
 
@@ -82,14 +90,14 @@ python3 -m stack_exchange -q="BFS vs DFS"
 The above command uses fast search, which fetches the top-voted question and answer and displays them to the console.
 
 ### Interactive Search
-Use the **-q** command followed by the search query and **-i** or **--interactive--**:
+Use the **-q** command followed by the search query and **-i** or **--interactive**
 
 ```bash
 python3 -m stack_exchange -q="BFS vs DFS" -i
 ```
 Interactive search allows the user to interact while searching, analogous to browsing stackoverflow questions in your browser, except in the terminal!
 
-### Command Line Arguments
+## Command Line Arguments  <a name="cli-args"></a>
 | Short | Long | Description | Example | Default |
 |---|---|---|---|---|
 | -q | --query | [*REQUIRED*] Search query | python3.10 -m stack_exchange -q="How to merge two dictionaries" | N/A |
@@ -98,10 +106,13 @@ Interactive search allows the user to interact while searching, analogous to bro
 | -i | --interactive | [*OPTIONAL*] Allow the user to interact while searching | python3.10 -m stack_exchange -q="Tree traversal" -i | False |
 | -n | --num | [*OPTIONAL*] Number of results to display when  interactive searching, must be used with -i | python3.10 -m stack_exchange -q="Segmentation fault cause" -i -n=20 | 30 |
 | -sb | --sortby | [*OPTIONAL*] Method to sort the search results by  choices = ["votes", "creation", "relevance", "activity"] | python3.10 -m stack_exchange -q="Python memory" -sb="relevance" | "votes" |
-| -v | --verbose | [*OPTIONAL*] Verbose logging flag, set log level to DEBUG | python3.10 -m stack_exchange -q="Dictionary internals" -v | False |
+| -vv | --verbose | [*OPTIONAL*] Verbose logging flag, set log level to DEBUG | python3.10 -m stack_exchange -q="Dictionary internals" -vv | False |
 | -c | --config | [*OPTIONAL*] config.yaml file path to use for  API, Redis and logging settings | python3.10 -m stack_exchange -q="Directed graph" -c="/mnt/c/config.yaml" | N/A |
 | -k | --key | [*OPTIONAL*] Use stack exchange API key for requests | python3.10 -m stack_exchange -q="Min heap vs max heap" -k="12345" | N/A |
-## Configuration
+| -h | --help | [*OPTIONAL*] Displays help text  | python3.10 -m stack_exchange -h | N/A |
+| -v | --version | [*OPTIONAL*] Displays version number | python3.10 -m stack_exchange -v | N/A |
+
+## Configuration  <a name="config"></a>
 
 The application can be optionally configured using the `config.yaml` file in the root directory or by using the `-c` cmd argument to point it to a config file path.
 
@@ -114,7 +125,7 @@ You can get an API Key by **registering** as a new app from here: http://stackap
 
 ### Redis Configuration
 
-Fill out yaml `redis` values with redis credentials if you want to hook up the application to a redis db for request
+Fill out yaml `redis` values with redis credentials if you want to hook up the application to a redis db for request caching.
 
 Speed benefits are minor, but it will help with being throttled as it will just read the cache instead of going over the network to the stack exchange API if you request the same thing more than once.
 
@@ -126,6 +137,7 @@ Modify `logging` values to adjust application log settings.
 By default, logging to a file will be disabled and the log level will be critical to avoid polluting the output.
 
 ### Example Config File
+*config.yaml*
 ```yaml
 api:
   api_key: your_api_key
@@ -143,7 +155,7 @@ logging:
   log_level: "DEBUG"
 ```
 
-## Testing
+## Testing  <a name="testing"></a>
 Run tests using pytest
 ```bash
 python3.10 -m pytest

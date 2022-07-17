@@ -3,6 +3,8 @@
 import argparse
 from abc import ABC
 
+from ._version import __version__
+
 
 class Command(ABC):
     def prepare_parser(self, parser: argparse.ArgumentParser) -> None:
@@ -89,10 +91,17 @@ class ConfigFileCommand(Command):
 
 
 class VerboseLoggingCommand(Command):
-    """Verbose logging flag"""
+    """Verbose logging flag [OPTIONAL]"""
 
     def prepare_parser(self, parser: argparse.ArgumentParser) -> None:
-        parser.add_argument("-v", "--verbose", help=self.__doc__, action="store_true", required=False)
+        parser.add_argument("-vv", "--verbose", help=self.__doc__, action="store_true", required=False)
+
+
+class VersionCommand(Command):
+    """Application version [OPTIONAL]"""
+
+    def prepare_parser(self, parser: argparse.ArgumentParser) -> None:
+        parser.add_argument("-v", "--version", help=self.__doc__, action="version", version=__version__)
 
 
 _COMMANDS: list[Command] = [
@@ -105,12 +114,15 @@ _COMMANDS: list[Command] = [
     ApiKeyCommand(),
     ConfigFileCommand(),
     VerboseLoggingCommand(),
+    VersionCommand(),
 ]
 
 
 def get_cmd_args() -> argparse.ArgumentParser:
     """Parse command line arguments"""
-    parser = argparse.ArgumentParser(description="Stack Exchange Command Line Search Client")
+    parser = argparse.ArgumentParser(
+        description="Stack Exchange Command Line Search Client - search stack exchange websites in your terminal!"
+    )
 
     for command in _COMMANDS:
         assert isinstance(command, Command)
