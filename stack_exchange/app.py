@@ -21,17 +21,24 @@ class App(Singleton):
     """
     App singleton contains all the read-only state data that must be accessible across the application.
     Configuration data includes - (redis, api, logging, cmd line arguments)
+
+    The use of the Singleton in this instance is justified because the data contained is only read-only data,
+    and all configuration data is immutable. Therefore, there is no risk of hard-to-trace bugs due to
+    global state modification.
     """
 
-    _CONFIG_FILE_PATH = os.path.join(os.path.dirname(__file__), "../config.yaml")
-
     def __init__(self) -> None:
-        self.__config = Config.from_yaml_file(self._CONFIG_FILE_PATH)
         self.__args = get_cmd_args()
+        self.__config_file_path = self.__args.config or os.path.join(os.path.dirname(__file__), "../config.yaml")
+        self.__config = Config.from_yaml_file(self.__config_file_path)
         self.__logger = logging.getLogger(__name__)
-        self._configure_logger()
+        self._setup()
 
+    def _setup(self) -> None:
+        self._configure_logger()
         self.__logger.debug(f"Command Arguments: {self.__args}")
+        self.__logger.debug(f"Using config file: {self.__config_file_path}")
+        self.__logger.debug(self.__config)
 
     @property
     def config(self) -> Config:

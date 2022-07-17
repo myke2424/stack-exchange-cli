@@ -51,9 +51,7 @@ class NumCommand(Command):
 
 
 class SortByCommand(Command):
-    """Sort the search results by the following method types [OPTIONAL]
-    'votes' (score), 'creation', 'relevance', 'activity'
-    """
+    """Sort the search results by the following method types [OPTIONAL] """
 
     def prepare_parser(self, parser: argparse.ArgumentParser) -> None:
         parser.add_argument(
@@ -62,6 +60,30 @@ class SortByCommand(Command):
             help=self.__doc__,
             choices=["votes", "creation", "relevance", "activity"],
             default="votes",
+            required=False,
+        )
+
+
+class ApiKeyCommand(Command):
+    """Pass in a stack exchange API key manually instead of using a config file to avoid request throttling [OPTIONAL] """
+
+    def prepare_parser(self, parser: argparse.ArgumentParser) -> None:
+        parser.add_argument(
+            "-k",
+            "--key",
+            help=self.__doc__,
+            required=False,
+        )
+
+
+class ConfigFileCommand(Command):
+    """Pass in a config.yaml file path to use for api, redis and logging settings [OPTIONAL]"""
+
+    def prepare_parser(self, parser: argparse.ArgumentParser) -> None:
+        parser.add_argument(
+            "-c",
+            "--config",
+            help=self.__doc__,
             required=False,
         )
 
@@ -79,8 +101,10 @@ _COMMANDS: list[Command] = [
     TagsCommand(),
     InteractiveCommand(),
     NumCommand(),
-    VerboseLoggingCommand(),
     SortByCommand(),
+    ApiKeyCommand(),
+    ConfigFileCommand(),
+    VerboseLoggingCommand(),
 ]
 
 
