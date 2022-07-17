@@ -3,6 +3,7 @@ import sys
 from .app import App
 from .cli import Terminal
 from .search import SearchRequest
+from rich import print as rprint
 
 
 def main():
@@ -30,6 +31,6 @@ if __name__ == "__main__":
     try:
         main()
     except Exception as e:
-        print("Search Failed")
-        print(f"Error: {e}")
+        rprint("[bold red]Search Failed")
+        rprint(f"[bold red]Error Reason:[/bold red] - {e}")
         sys.exit(1)
