@@ -77,19 +77,17 @@ python3 -m stack_exchange -q="BFS vs DFS"
 The above command uses fast search, which fetches the top-voted question and answer and displays them to the console.
 
 ### Command Line Arguments
-
-| Short | Long | Description | Example | Required | Default |
-|---|---|---|---|---|---|
-| -q | --query | Search query | python3.10 -m stack_exchange -q="How to merge two dictionaries" | True | N/A |
-| -s | --site | Stack Exchange website to search on View all sites here: (https://stackexchange.com/sites) | python3.10 -m stack_exchange -q="Big O" -s="softwareengineering" | False | "stackoverflow" |
-| -t | --tags | Search tags (space-delimited) | python3.10 -m stack_exchange -q="Segmentation fault cause" -t="c c++" | False | N/A |
-| -i | --interactive | Allow the user to interact while searching | python3.10 -m stack_exchange -q="Tree traversal" -i | False | False |
-| -n | --num | Number of results to display when interactive searching, must be used with -i | python3.10 -m stack_exchange -q="Segmentation fault cause" -i -n=20 | False | 30 |
-| -sb | --sortby | Method to sort the search results by choices = ["votes", "creation", "relevance", "activity"] | python3.10 -m stack_exchange -q="Python memory" -sb="relevance" | False | "votes" |
-| -v | --verbose | Verbose logging flag, set log level to DEBUG | python3.10 -m stack_exchange -q="Dictionary internals" -v | False | False |
-| -c | --config | config.yaml file path to use for API, redis and logging settings | python3.10 -m stack_exchange -q="Directed graph" -c="/mnt/c/config.yaml" | False | N/A |
-| -k | --key | Use stack exchange API key for requests | python3.10 -m stack_exchange -q="Min heap vs max heap" -k="12345" | False | N/A |
-
+| Short | Long | Description | Example | Default |
+|---|---|---|---|---|
+| -q | --query | [*REQUIRED*] Search query | python3.10 -m stack_exchange -q="How to merge two dictionaries" | N/A |
+| -s | --site | [*OPTIONAL*] Stack Exchange website to search on View all sites here: (https://stackexchange.com/sites) | python3.10 -m stack_exchange -q="Big O" -s="softwareengineering" | "stackoverflow" |
+| -t | --tags | [*OPTIONAL*] Search tags (space-delimited) | python3.10 -m stack_exchange -q="Segmentation fault cause" -t="c c++" | N/A |
+| -i | --interactive | [*OPTIONAL*] Allow the user to interact while searching | python3.10 -m stack_exchange -q="Tree traversal" -i | False |
+| -n | --num | [*OPTIONAL*] Number of results to display when  interactive searching, must be used with -i | python3.10 -m stack_exchange -q="Segmentation fault cause" -i -n=20 | 30 |
+| -sb | --sortby | [*OPTIONAL*] Method to sort the search results by  choices = ["votes", "creation", "relevance", "activity"] | python3.10 -m stack_exchange -q="Python memory" -sb="relevance" | "votes" |
+| -v | --verbose | [*OPTIONAL*] Verbose logging flag, set log level to DEBUG | python3.10 -m stack_exchange -q="Dictionary internals" -v | False |
+| -c | --config | [*OPTIONAL*] config.yaml file path to use for  API, Redis and logging settings | python3.10 -m stack_exchange -q="Directed graph" -c="/mnt/c/config.yaml" | N/A |
+| -k | --key | [*OPTIONAL*] Use stack exchange API key for requests | python3.10 -m stack_exchange -q="Min heap vs max heap" -k="12345" | N/A |
 ## Configuration
 
 The application can be optionally configured using the `config.yaml` file in the root directory
