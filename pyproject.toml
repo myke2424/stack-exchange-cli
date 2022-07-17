@@ -7,7 +7,7 @@ license = "MIT"
 readme = "README.md"
 include = ["config.yaml", "pyproject.toml"]
 exclude = ["tests", "scripts"]
-keywords = ["stack-exchange", "stack-exchange search", "stack-exchange cli", "stackoverflow"]
+keywords = ["stack-exchange", "stack-exchange search", "stack-exchange cli", "stackoverflow", "stackexchange"]
 packages = [
     { include = "stack_exchange" }
 ]
