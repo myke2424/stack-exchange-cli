@@ -1,4 +1,4 @@
-VENV_PATH=.stackexchange-venv
+VENV_PATH=.stack-exchange-venv
 VENV_PYTHON_BIN=${VENV_PATH}/bin/python3.10
 VENV_PIP_BIN=${VIRTUALENV_PATH}/bin/pip
 REQUIREMENTS_FILE_PATH=./requirements.txt

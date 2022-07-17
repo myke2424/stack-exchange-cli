@@ -27,42 +27,47 @@ Displays the highest up-voted question and top answer for your search request \
 
 #####       
 
+### Main Installation
 Just pip install it!
 
 ```bash
 python3.10 -m pip install stack-exchange-cli
 ```
 
-Or install the **requirements** file manually
+### Alternative methods to install
+- Install the **requirements** file manually
 
-```bash
-python3.10 -m pip install -r requirements.txt
-```
+    ```bash
+    python3.10 -m pip install -r requirements.txt
+    ```
+  
+- Use **poetry** to install dependencies locally (https://python-poetry.org/docs/)
 
-Or use **poetry** to install dependencies locally (https://python-poetry.org/docs/)
+    ```bash
+    poetry install
+    ```
 
-```bash
-poetry install
-```
+- Run the `scripts/install.sh` script to install into a venv named `.stack-exchange-venv` [*UBUNTU* ONLY]
 
-Or run the `scripts/install.sh` script - in the **root directory**
+    ```bash
+    # run in root directory
+    sudo bash scripts/install.sh
+    ```
 
-```bash
-sudo bash scripts/install.sh
-```
+- Install to venv named `.stack-exchange-venv` using make 
+    
+  ```bash
+  # run in root directory
+  make
+  ```
 
-Or build using make - in the **root directory**
+- Build from source using poetry
 
-```
-make
-```
-
-Or build from source using poetry
-
-```bash
-poetry build
-python3.10 -m pip install dist/stack_exchange_cli*.whl
-```
+  ```bash
+  # run in root directory
+  poetry build
+  python3.10 -m pip install dist/stack_exchange_cli*.whl
+  ```
 
 ## Usage
 
@@ -75,6 +80,14 @@ python3 -m stack_exchange -q="BFS vs DFS"
 ```
 
 The above command uses fast search, which fetches the top-voted question and answer and displays them to the console.
+
+### Interactive Search
+Use the **-q** command followed by the search query and **-i** or **--interactive--**:
+
+```bash
+python3 -m stack_exchange -q="BFS vs DFS" -i
+```
+Interactive search allows the user to interact while searching, analogous to browsing stackoverflow questions in your browser, except in the terminal!
 
 ### Command Line Arguments
 | Short | Long | Description | Example | Default |
@@ -90,18 +103,48 @@ The above command uses fast search, which fetches the top-voted question and ans
 | -k | --key | [*OPTIONAL*] Use stack exchange API key for requests | python3.10 -m stack_exchange -q="Min heap vs max heap" -k="12345" | N/A |
 ## Configuration
 
-The application can be optionally configured using the `config.yaml` file in the root directory
+The application can be optionally configured using the `config.yaml` file in the root directory or by using the `-c` cmd argument to point it to a config file path.
 
 ### API Configuration
 
-Fill out yaml `api` values with a stack exchange API key to prevent request throttling. Read more
-here:  (https://api.stackexchange.com/docs/throttle)
+Fill out yaml `api` values with a stack exchange `API key` to prevent **request throttling**. \
+Read more here:  https://api.stackexchange.com/docs/throttle
+
+You can get an API Key by **registering** as a new app from here: http://stackapps.com/apps/oauth/register
 
 ### Redis Configuration
 
 Fill out yaml `redis` values with redis credentials if you want to hook up the application to a redis db for request
-caching.
 
+Speed benefits are minor, but it will help with being throttled as it will just read the cache instead of going over the network to the stack exchange API if you request the same thing more than once.
+
+This isn't needed but if you want to use the redis free tier, check out: https://redis.com/try-free/
 ### Logging configuration
 
 Modify `logging` values to adjust application log settings.
+
+By default, logging to a file will be disabled and the log level will be critical to avoid polluting the output.
+
+### Example Config File
+```yaml
+api:
+  api_key: your_api_key
+  default_site: "stackoverflow" 
+  version: 2.3
+
+redis:
+  host: redis-notarealhost.redislabs.com
+  port: 12345
+  password: redisdbfakepassword
+
+logging:
+  log_to_file: true
+  log_filename: "stackexchange.log"
+  log_level: "DEBUG"
+```
+
+## Testing
+Run tests using pytest
+```bash
+python3.10 -m pytest
+```
