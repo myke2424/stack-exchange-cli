@@ -104,6 +104,12 @@ class VersionCommand(Command):
         parser.add_argument("-v", "--version", help=self.__doc__, action="version", version=__version__)
 
 
+class GoogleSearch(Command):
+    """Use google search instead of stack-exchange API for searching"""
+
+    # TODO: Implement functionality
+
+
 _COMMANDS: list[Command] = [
     QueryCommand(),
     SiteCommand(),

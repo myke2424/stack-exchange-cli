@@ -6,7 +6,7 @@ Search stack exchange websites in your terminal!
 
 With beautiful terminal formatting using Rich.
 
-![Demo](https://s1.gifyu.com/images/Recording-2022-07-17-at-13.41.05-1.gif)
+![Demo](https://s1.gifyu.com/images/Recording-2022-07-17-at-18.39.33-4.gif)
 
 
 ## Table of Contents
@@ -42,6 +42,23 @@ Just pip install it!
 python3.10 -m pip install stack-exchange-cli
 ```
 
+### Install Python 3.10
+
+#### Mac
+```bash
+brew install python@3.10
+```
+
+#### Linux
+```bash
+sudo apt install software-properties-common -y
+sudo add-apt-repository ppa:deadsnakes/ppa -y
+sudo apt update
+sudo apt install python3.10 -y
+```
+#### Windows
+Download from here: https://www.python.org/downloads/
+
 ### Alternative methods to install
 - Install the **requirements** file manually
 
@@ -55,11 +72,11 @@ python3.10 -m pip install stack-exchange-cli
     poetry install
     ```
 
-- Run the `scripts/install.sh` script to install into a venv named `.stack-exchange-venv` [*UBUNTU* ONLY]
+- Run the `scripts/install_ubuntu.sh` script [*UBUNTU* ONLY]
 
     ```bash
     # run in root directory
-    sudo bash scripts/install.sh
+    sudo bash scripts/install_ubuntu.sh
     ```
 
 - Install to venv named `.stack-exchange-venv` using make 
@@ -84,7 +101,7 @@ python3.10 -m pip install stack-exchange-cli
 Use the **-q** command followed by the search query:
 
 ```bash
-python3 -m stack_exchange -q="BFS vs DFS"
+se -q="BFS vs DFS"
 ```
 
 The above command uses fast search, which fetches the top-voted question and answer and displays them to the console.
@@ -93,24 +110,29 @@ The above command uses fast search, which fetches the top-voted question and ans
 Use the **-q** command followed by the search query and **-i** or **--interactive**
 
 ```bash
-python3 -m stack_exchange -q="BFS vs DFS" -i
+se -q="BFS vs DFS" -i
 ```
 Interactive search allows the user to interact while searching, analogous to browsing stackoverflow questions in your browser, except in the terminal!
 
+### Run directly with python interpreter
+```bash
+python3.10 -m stack_exchange -q="BFS vs DFS"
+```
+
 ## Command Line Arguments  <a name="cli-args"></a>
-| Short | Long | Description | Example | Default |
-|---|---|---|---|---|
-| -q | --query | [*REQUIRED*] Search query | python3.10 -m stack_exchange -q="How to merge two dictionaries" | N/A |
-| -s | --site | [*OPTIONAL*] Stack Exchange website to search on View all sites here: (https://stackexchange.com/sites) | python3.10 -m stack_exchange -q="Big O" -s="softwareengineering" | "stackoverflow" |
-| -t | --tags | [*OPTIONAL*] Search tags (space-delimited) | python3.10 -m stack_exchange -q="Segmentation fault cause" -t="c c++" | N/A |
-| -i | --interactive | [*OPTIONAL*] Allow the user to interact while searching | python3.10 -m stack_exchange -q="Tree traversal" -i | False |
-| -n | --num | [*OPTIONAL*] Number of results to display when  interactive searching, must be used with -i | python3.10 -m stack_exchange -q="Segmentation fault cause" -i -n=20 | 30 |
-| -sb | --sortby | [*OPTIONAL*] Method to sort the search results by  choices = ["votes", "creation", "relevance", "activity"] | python3.10 -m stack_exchange -q="Python memory" -sb="relevance" | "votes" |
-| -vv | --verbose | [*OPTIONAL*] Verbose logging flag, set log level to DEBUG | python3.10 -m stack_exchange -q="Dictionary internals" -vv | False |
-| -c | --config | [*OPTIONAL*] config.yaml file path to use for  API, Redis and logging settings | python3.10 -m stack_exchange -q="Directed graph" -c="/mnt/c/config.yaml" | N/A |
-| -k | --key | [*OPTIONAL*] Use stack exchange API key for requests | python3.10 -m stack_exchange -q="Min heap vs max heap" -k="12345" | N/A |
-| -h | --help | [*OPTIONAL*] Displays help text  | python3.10 -m stack_exchange -h | N/A |
-| -v | --version | [*OPTIONAL*] Displays version number | python3.10 -m stack_exchange -v | N/A |
+| Short | Long | Description | Example                                        | Default |
+|---|---|---|------------------------------------------------|---|
+| -q | --query | [*REQUIRED*] Search query | se -q="How to merge two dictionaries"          | N/A |
+| -s | --site | [*OPTIONAL*] Stack Exchange website to search on View all sites here: (https://stackexchange.com/sites) | se -q="Big O" -s="softwareengineering"         | "stackoverflow" |
+| -t | --tags | [*OPTIONAL*] Search tags (space-delimited) | se -q="Segmentation fault cause" -t="c c++"    | N/A |
+| -i | --interactive | [*OPTIONAL*] Allow the user to interact while searching | se -q="Tree traversal" -i                      | False |
+| -n | --num | [*OPTIONAL*] Number of results to display when  interactive searching, must be used with -i | se -q="Segmentation fault cause" -i -n=20      | 30 |
+| -sb | --sortby | [*OPTIONAL*] Method to sort the search results by  choices = ["votes", "creation", "relevance", "activity"] | se -q="Python memory" -sb="relevance"          | "votes" |
+| -vv | --verbose | [*OPTIONAL*] Verbose logging flag, set log level to DEBUG | se -q="Dictionary internals" -vv               | False |
+| -c | --config | [*OPTIONAL*] config.yaml file path to use for  API, Redis and logging settings | se -q="Directed graph" -c="/mnt/c/config.yaml" | N/A |
+| -k | --key | [*OPTIONAL*] Use stack exchange API key for requests | se -q="Min heap vs max heap" -k="12345"        | N/A |
+| -h | --help | [*OPTIONAL*] Displays help text  | se -h                                          | N/A |
+| -v | --version | [*OPTIONAL*] Displays version number | se -v                                          | N/A |
 
 ## Configuration  <a name="config"></a>
 
