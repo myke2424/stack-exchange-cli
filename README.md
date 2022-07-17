@@ -6,7 +6,7 @@ Search stack exchange websites in your terminal!
 
 With beautiful terminal formatting using Rich.
 
-![Demo](https://media.giphy.com/media/TsWaWpgD0S4bP3SHv3/giphy.gif)
+![Demo](https://s1.gifyu.com/images/Recording-2022-07-17-at-13.41.05-1.gif)
 
 
 ## Table of Contents
