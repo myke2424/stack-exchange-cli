@@ -6,7 +6,7 @@ Search stack exchange websites in your terminal!
 
 With beautiful terminal formatting using Rich.
 
-![Demo](https://s1.gifyu.com/images/Recording-2022-07-17-at-13.41.05-1.gif)
+![Demo](https://s1.gifyu.com/images/Recording-2022-07-17-at-18.39.33-4.gif)
 
 
 ## Table of Contents
@@ -42,6 +42,23 @@ Just pip install it!
 python3.10 -m pip install stack-exchange-cli
 ```
 
+### Install Python 3.10
+
+#### Mac
+```bash
+brew install python@3.10
+```
+
+#### Linux
+```bash
+sudo apt install software-properties-common -y
+sudo add-apt-repository ppa:deadsnakes/ppa -y
+sudo apt update
+sudo apt install python3.10 -y
+```
+#### Windows
+Download from here: https://www.python.org/downloads/
+
 ### Alternative methods to install
 - Install the **requirements** file manually
 
@@ -55,11 +72,11 @@ python3.10 -m pip install stack-exchange-cli
     poetry install
     ```
 
-- Run the `scripts/install.sh` script to install into a venv named `.stack-exchange-venv` [*UBUNTU* ONLY]
+- Run the `scripts/install_ubuntu.sh` script [*UBUNTU* ONLY]
 
     ```bash
     # run in root directory
-    sudo bash scripts/install.sh
+    sudo bash scripts/install_ubuntu.sh
     ```
 
 - Install to venv named `.stack-exchange-venv` using make 
@@ -97,7 +114,7 @@ se -q="BFS vs DFS" -i
 ```
 Interactive search allows the user to interact while searching, analogous to browsing stackoverflow questions in your browser, except in the terminal!
 
-###Run directly with python interpreter
+### Run directly with python interpreter
 ```bash
 python3.10 -m stack_exchange -q="BFS vs DFS"
 ```

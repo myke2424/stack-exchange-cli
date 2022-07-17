@@ -1,9 +1,10 @@
 import sys
 
+from rich import print as rprint
+
 from .app import App
 from .cli import Terminal
 from .search import SearchRequest
-from rich import print as rprint
 
 
 def main():

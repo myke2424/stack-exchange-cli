@@ -105,7 +105,8 @@ class VersionCommand(Command):
 
 
 class GoogleSearch(Command):
-    """ Use google search instead of stack-exchange API for searching"""
+    """Use google search instead of stack-exchange API for searching"""
+
     # TODO: Implement functionality
 
 
