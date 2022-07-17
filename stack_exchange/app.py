@@ -22,9 +22,8 @@ class App(Singleton):
     App singleton contains all the read-only state data that must be accessible across the application.
     Configuration data includes - (redis, api, logging, cmd line arguments)
 
-    The use of the Singleton in this instance is justified because the data contained is only read-only data,
-    and all configuration data is immutable. Therefore, there is no risk of hard-to-trace bugs due to
-    global state modification.
+    The use of the Singleton in this instance is justified because the data contained is only read-only data.
+    Therefore, there is no risk of hard-to-trace bugs due to global state modification.
     """
 
     def __init__(self) -> None:
@@ -36,6 +35,10 @@ class App(Singleton):
 
     def _setup(self) -> None:
         self._configure_logger()
+
+        if self.__args.key:
+            self.__config.api.api_key = self.__args.key
+
         self.__logger.debug(f"Command Arguments: {self.__args}")
         self.__logger.debug(f"Using config file: {self.__config_file_path}")
         self.__logger.debug(self.__config)

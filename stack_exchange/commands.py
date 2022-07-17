@@ -51,7 +51,7 @@ class NumCommand(Command):
 
 
 class SortByCommand(Command):
-    """Sort the search results by the following method types [OPTIONAL] """
+    """Sort the search results by the following method types [OPTIONAL]"""
 
     def prepare_parser(self, parser: argparse.ArgumentParser) -> None:
         parser.add_argument(
@@ -65,7 +65,7 @@ class SortByCommand(Command):
 
 
 class ApiKeyCommand(Command):
-    """Pass in a stack exchange API key manually instead of using a config file to avoid request throttling [OPTIONAL] """
+    """Pass in a stack exchange API key manually instead of using a config file to avoid request throttling [OPTIONAL]"""
 
     def prepare_parser(self, parser: argparse.ArgumentParser) -> None:
         parser.add_argument(

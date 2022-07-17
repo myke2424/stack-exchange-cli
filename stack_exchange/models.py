@@ -162,7 +162,7 @@ class SearchResult:
         return {"question": self.question.__dict__, "answer": self.answer.__dict__}
 
 
-@dataclass(frozen=True)
+@dataclass
 class StackExchangeApiConfig:
     """
     Model representation of the Stack Exchange API Config
