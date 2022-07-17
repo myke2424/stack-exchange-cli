@@ -106,9 +106,11 @@ Interactive search allows the user to interact while searching, analogous to bro
 | -i | --interactive | [*OPTIONAL*] Allow the user to interact while searching | python3.10 -m stack_exchange -q="Tree traversal" -i | False |
 | -n | --num | [*OPTIONAL*] Number of results to display when  interactive searching, must be used with -i | python3.10 -m stack_exchange -q="Segmentation fault cause" -i -n=20 | 30 |
 | -sb | --sortby | [*OPTIONAL*] Method to sort the search results by  choices = ["votes", "creation", "relevance", "activity"] | python3.10 -m stack_exchange -q="Python memory" -sb="relevance" | "votes" |
-| -v | --verbose | [*OPTIONAL*] Verbose logging flag, set log level to DEBUG | python3.10 -m stack_exchange -q="Dictionary internals" -v | False |
+| -vv | --verbose | [*OPTIONAL*] Verbose logging flag, set log level to DEBUG | python3.10 -m stack_exchange -q="Dictionary internals" -vv | False |
 | -c | --config | [*OPTIONAL*] config.yaml file path to use for  API, Redis and logging settings | python3.10 -m stack_exchange -q="Directed graph" -c="/mnt/c/config.yaml" | N/A |
 | -k | --key | [*OPTIONAL*] Use stack exchange API key for requests | python3.10 -m stack_exchange -q="Min heap vs max heap" -k="12345" | N/A |
+| -h | --help | [*OPTIONAL*] Displays help text  | python3.10 -m stack_exchange -h | N/A |
+| -v | --version | [*OPTIONAL*] Displays version number | python3.10 -m stack_exchange -v | N/A |
 
 ## Configuration  <a name="config"></a>
 
