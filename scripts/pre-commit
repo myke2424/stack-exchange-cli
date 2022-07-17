@@ -21,3 +21,4 @@ run_flake8_on_staged_py_files() {
 }
 
 run_formatting_on_staged_py_files
+run_flake8_on_staged_py_files
