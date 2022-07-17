@@ -112,6 +112,14 @@ python3.10 -m stack_exchange -q="Segmentation fault cause" -i
 python3.10 -m stack_exchange -q="Segmentation fault cause" -i -n=20
 ```
 
+**Sort By** - default="votes"  [*OPTIONAL*] \
+Method to sort the search results by, default we sort by highest score \
+*choices* = ["votes", "creation", "relevance", "activity"]
+```bash
+# -sb or --sortby
+python3.10 -m stack_exchange -q="Segmentation fault cause" -sb="relevance"
+```
+
 **Verbose logging flag** [*OPTIONAL*]
 ```bash
 # -v or --verbose
