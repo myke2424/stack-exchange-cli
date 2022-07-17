@@ -8,6 +8,15 @@ With beautiful terminal formatting using Rich.
 
 ![Demo](https://media.giphy.com/media/TsWaWpgD0S4bP3SHv3/giphy.gif)
 
+
+## Table of Contents
+1. [How it works](##How it works)
+2. [Install](##Install)
+3. [Usage](##Usage)
+4. [Command Line Arguments](##Command Line Arguments)
+5. [Configuration](##Configuration)
+6. [Testing](##Testing)
+
 ## How it works
 
 Displays the highest up-voted question and top answer for your search request \
@@ -24,8 +33,7 @@ Displays the highest up-voted question and top answer for your search request \
 ##### Requirements
 
 * Python 3.10 or higher
-
-#####       
+ 
 
 ### Main Installation
 Just pip install it!
@@ -82,14 +90,14 @@ python3 -m stack_exchange -q="BFS vs DFS"
 The above command uses fast search, which fetches the top-voted question and answer and displays them to the console.
 
 ### Interactive Search
-Use the **-q** command followed by the search query and **-i** or **--interactive--**:
+Use the **-q** command followed by the search query and **-i** or **--interactive--**
 
 ```bash
 python3 -m stack_exchange -q="BFS vs DFS" -i
 ```
 Interactive search allows the user to interact while searching, analogous to browsing stackoverflow questions in your browser, except in the terminal!
 
-### Command Line Arguments
+## Command Line Arguments
 | Short | Long | Description | Example | Default |
 |---|---|---|---|---|
 | -q | --query | [*REQUIRED*] Search query | python3.10 -m stack_exchange -q="How to merge two dictionaries" | N/A |
@@ -114,7 +122,7 @@ You can get an API Key by **registering** as a new app from here: http://stackap
 
 ### Redis Configuration
 
-Fill out yaml `redis` values with redis credentials if you want to hook up the application to a redis db for request
+Fill out yaml `redis` values with redis credentials if you want to hook up the application to a redis db for request caching.
 
 Speed benefits are minor, but it will help with being throttled as it will just read the cache instead of going over the network to the stack exchange API if you request the same thing more than once.
 
@@ -126,6 +134,7 @@ Modify `logging` values to adjust application log settings.
 By default, logging to a file will be disabled and the log level will be critical to avoid polluting the output.
 
 ### Example Config File
+*config.yaml*
 ```yaml
 api:
   api_key: your_api_key
