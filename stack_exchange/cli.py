@@ -95,8 +95,9 @@ class Terminal:
     def _print_question(self, question: Question) -> None:
         rprint("[bold green]-" * self.__terminal_size.columns)
         date = utils.epoch_time_to_datetime_str(question.creation_date)
-        self.__console.print(utils.html_to_markdown(f"<h1>Question | {date} | {question.score} votes</h1>"),
-                             style="green")
+        self.__console.print(
+            utils.html_to_markdown(f"<h1>Question | {date} | {question.score} votes</h1>"), style="green"
+        )
         rprint(f"\n[bold red][bold green]{question.title} \n")
         self.__console.print(utils.html_to_markdown(question.body))
         rprint("[bold green]-" * self.__terminal_size.columns)

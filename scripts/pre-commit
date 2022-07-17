@@ -1,0 +1,12 @@
+#!/bin/sh
+
+STAGED_PY_FILES=$(git diff --diff-filter=d --cached --name-only | grep -E '\.(py)$')
+
+run_formatting_on_staged_py_files() {
+    for file in $STAGED_PY_FILES; do
+        poetry run black --line-length=120 file
+        poetry run isort --line-length=120 file
+    done
+}
+
+run_formatting_on_staged_py_files
