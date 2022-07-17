@@ -1,6 +1,7 @@
 from pathlib import Path
 
 import yaml
+import datetime
 from markdownify import markdownify as md
 from rich.markdown import Markdown
 
@@ -19,3 +20,8 @@ def load_yaml_file(file_path: str) -> dict:
     with path.open() as f:
         config = yaml.load(f, Loader=yaml.FullLoader)
     return config
+
+
+def epoch_time_to_datetime_str(timestamp: int) -> str:
+    """ Parse epoch unix timestamp to a datetime str"""
+    return datetime.datetime.fromtimestamp(timestamp).strftime('%Y-%m-%d')

@@ -94,14 +94,17 @@ class Terminal:
 
     def _print_question(self, question: Question) -> None:
         rprint("[bold green]-" * self.__terminal_size.columns)
-        self.__console.print(utils.html_to_markdown("<h1>Question</h1>"), style="green")
+        date = utils.epoch_time_to_datetime_str(question.creation_date)
+        self.__console.print(utils.html_to_markdown(f"<h1>Question | {date} | {question.score} votes</h1>"),
+                             style="green")
         rprint(f"\n[bold red][bold green]{question.title} \n")
         self.__console.print(utils.html_to_markdown(question.body))
         rprint("[bold green]-" * self.__terminal_size.columns)
 
     def _print_answer(self, answer: Answer) -> None:
         rprint("[bold blue]-" * self.__terminal_size.columns)
-        self.__console.print(utils.html_to_markdown("<h1> Answer </h1>"), style="blue")
+        date = utils.epoch_time_to_datetime_str(answer.creation_date)
+        self.__console.print(utils.html_to_markdown(f"<h1>Answer | {date} | {answer.score} votes</h1>"), style="blue")
         print("\n")
         self.__console.print(utils.html_to_markdown(answer.body))
         rprint("[bold blue]-" * self.__terminal_size.columns)
@@ -110,4 +113,4 @@ class Terminal:
         """Pretty print a search result to the console using Rich Formatting"""
         self._print_question(search_result.question)
         self._print_answer(search_result.answer)
-        rprint(f"[bold green]Question link:[/bold green] {search_result.question.link}")
+        rprint(f"[bold green]Question link:[/bold green] {search_result.question.link}\n")

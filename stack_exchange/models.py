@@ -110,7 +110,7 @@ class StackResponseItem:
 
     body: str
     score: int
-    creation_date: str
+    creation_date: int
 
     @classmethod
     def from_response_item(cls, response_item: dict) -> "StackResponseItem":
