@@ -62,6 +62,8 @@ class Terminal:
 
                 if 0 <= selected_result_idx <= len(search_results) - 1:
                     break
+                else:
+                    raise ValueError
             except ValueError:
                 rprint("[bold red]INVALID INPUT... please enter a valid question number")
         return selected_result_idx

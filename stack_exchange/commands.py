@@ -49,7 +49,7 @@ class NumCommand(Command):
     """Number of results to display when interactive searching [OPTIONAL]"""
 
     def prepare_parser(self, parser: argparse.ArgumentParser) -> None:
-        parser.add_argument("-n", "--num", help=self.__doc__, default=30, required=False)
+        parser.add_argument("-n", "--num", help=self.__doc__, default=30, type=int, required=False)
 
 
 class SortByCommand(Command):
