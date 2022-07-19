@@ -4,6 +4,7 @@ import logging
 import os
 import sys
 import webbrowser
+import json
 from enum import Enum
 
 from rich import print as rprint
@@ -24,16 +25,20 @@ class UserCommand(Enum):
 class Terminal:
     """Responsible for handling user input and displaying results to the terminal"""
 
-    def __init__(self, interactive_search: bool) -> None:
+    def __init__(self, interactive_search: bool, jsonify: bool = False) -> None:
         self.__console = Console()
         self.__interactive_search = interactive_search
         self.__terminal_size = os.get_terminal_size()
+        self.__jsonify = jsonify
 
     def display(self, query: str, search_results: list[SearchResult]) -> None:
         """Main interface to display terminal output and interaction"""
         if not self.__interactive_search:
             logger.info("Using fast-search...")
-            self._print_result(search_results[0])
+            if self.__jsonify:
+                print(json.dumps([sr.to_json() for sr in search_results], indent=2))
+            else:
+                self._print_result(search_results[0])
             sys.exit(0)
 
         self._interactive_search_handler(query, search_results)

@@ -2,6 +2,7 @@ import json
 import logging
 from abc import ABC, abstractmethod
 from typing import Any
+from rich import print as rprint
 
 import redis
 
@@ -27,16 +28,42 @@ class Cache(ABC):
         """Set key with associated value in cache"""
         pass
 
+    @abstractmethod
+    def clear(self) -> None:
+        """Clear all keys/values in cache"""
+        pass
+
 
 class RedisCache(Cache):
-    def __init__(self, host: str, port: int, password: str) -> None:
+    def __init__(self, host: str, port: int, password: str, flush: bool = False) -> None:
         self.__db = redis.Redis(host=host, port=port, password=password)
+        self._flush = flush
+        self._setup()
+
+    def _setup(self) -> None:
         self._validate_connection()
 
+        if self._flush:
+            self._flush_prompt()
+
     def _validate_connection(self) -> None:
-        """Validate connection to Redis DB is working"""
         if not self.__db.ping():
             raise RedisConnectionError("Failed to connect to Redis Database...")
+
+    def _flush_prompt(self) -> None:
+        while True:
+            try:
+                should_flush = input("Are you sure you want to flush the cache? Type 'y' for YES | 'n' for NO ")
+                print(should_flush)
+                if should_flush != 'n' and should_flush != 'y':
+                    raise ValueError
+                else:
+                    break
+            except ValueError:
+                rprint("[bold red]Please enter a valid value: 'y' or 'n'")
+
+        if should_flush == 'y':
+            self.clear()
 
     def get(self, key: str) -> Any:
         logger.debug(f"Reading cache - key: {key}")
@@ -58,3 +85,7 @@ class RedisCache(Cache):
         if isinstance(value, (dict, list)):
             value = json.dumps(value)
         self.__db.set(key, value)
+
+    def clear(self) -> None:
+        logger.debug("FLUSHING REDIS DATABASE!!!")
+        self.__db.flushdb()

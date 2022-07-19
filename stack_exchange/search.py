@@ -26,7 +26,7 @@ class StackExchange(Searchable):
     _ANSWERS_ENDPOINT = "/answers"
 
     def __init__(self, api_config: StackExchangeApiConfig | None = None) -> None:
-        self.__version = api_config.version or "2.3"
+        self.__version = api_config.version if api_config else "2.3"
         self.__api_config = api_config
         self.url = f"https://api.stackexchange.com/{self.__version}"
 
@@ -101,9 +101,10 @@ class CachedStackExchange(Searchable):
     Use a cache as a proxy object to set and get search results for faster look up time.
     """
 
-    def __init__(self, stack_exchange_service: StackExchange, cache: Cache) -> None:
+    def __init__(self, stack_exchange_service: StackExchange, cache: Cache, overwrite: bool = False) -> None:
         self.cache = cache
         self.service = stack_exchange_service
+        self._overwrite = overwrite
 
     def _prepare_search_uri(self, search_params: dict) -> str:
         """Prepare the search url to use it for the key when caching requests"""
@@ -120,7 +121,7 @@ class CachedStackExchange(Searchable):
 
         cached_search_results = self.cache.get(request_url)
 
-        if cached_search_results is not None:
+        if cached_search_results is not None and not self._overwrite:
             logger.info(f"Using cached results for url: {request_url}")
             return [SearchResult.from_json(sr_json) for sr_json in cached_search_results]
 

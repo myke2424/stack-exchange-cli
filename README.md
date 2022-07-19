@@ -162,17 +162,17 @@ By default, logging to a file will be disabled and the log level will be critica
 *config.yaml*
 ```yaml
 api:
-  api_key: your_api_key
-  default_site: "stackoverflow" 
-  version: 2.3
+  api_key: your_api_key # optional
+  default_site: "stackoverflow"  # required
+  version: 2.3 # required
 
-redis:
+redis: # all fields optional
   host: redis-notarealhost.redislabs.com
   port: 12345
   password: redisdbfakepassword
 
-logging:
-  log_to_file: true
+logging: # all fields required
+  log_to_file: true 
   log_filename: "stackexchange.log"
   log_level: "DEBUG"
 ```

@@ -8,3 +8,7 @@ class ZeroSearchResultsError(RuntimeError):
 
 class RedisConnectionError(ConnectionError):
     """Raise exception when connection to a Redis DB fails"""
+
+
+class InvalidConfigurationError(ValueError):
+    """ Raise when user uses an invalid config.yaml file """

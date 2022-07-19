@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 
 from . import utils
+from .errors import InvalidConfigurationError
 
 
 @dataclass(frozen=True)
@@ -130,7 +131,7 @@ class StackResponseItem:
 @dataclass(frozen=True)
 class Question(StackResponseItem):
     """Model representation of a StackExchange Question"""
-
+    question_id: int
     title: str
     link: str
     accepted_answer_id: int
@@ -195,21 +196,32 @@ class LoggingConfig:
     log_level: str
 
 
-@dataclass
+@dataclass(frozen=True)
 class Config:
     """Model representation of the application configuration settings"""
 
-    api: StackExchangeApiConfig | None
-    redis: RedisConfig | None
     logging: LoggingConfig
+    api: StackExchangeApiConfig
+    redis: RedisConfig | None = None
 
     @classmethod
     def from_yaml_file(cls, file_path: str) -> "Config":
         config = utils.load_yaml_file(file_path)
-        api, redis, logging = (
-            StackExchangeApiConfig(**config["api"]),
-            RedisConfig(**config["redis"]),
-            LoggingConfig(**config["logging"]),
-        )
 
-        return cls(api, redis, logging)
+        api = config.get('api')
+        logging = config.get('logging')
+        redis = config.get('redis')
+
+        if api is None:
+            raise InvalidConfigurationError("API version and default site must be set in config.yaml")
+
+        if logging is None:
+            raise InvalidConfigurationError("logging configuration must be set in config.yaml")
+
+        api = StackExchangeApiConfig(**api)
+        logging = LoggingConfig(**logging)
+
+        if redis is not None:
+            redis = RedisConfig(**config["redis"])
+
+        return cls(api=api, redis=redis, logging=logging)

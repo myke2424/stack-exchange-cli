@@ -78,6 +78,18 @@ class ApiKeyCommand(Command):
         )
 
 
+class SetApiKeyCommand(Command):
+    """Set stack exchange API key in config.yaml, to avoid repeating using -k search commands [OPTIONAL]"""
+
+    def prepare_parser(self, parser: argparse.ArgumentParser) -> None:
+        parser.add_argument(
+            "-sk",
+            "--set-key",
+            help=self.__doc__,
+            required=False,
+        )
+
+
 class ConfigFileCommand(Command):
     """Pass in a config.yaml file path to use for api, redis and logging settings [OPTIONAL]"""
 
@@ -104,6 +116,27 @@ class VersionCommand(Command):
         parser.add_argument("-v", "--version", help=self.__doc__, action="version", version=__version__)
 
 
+class FlushCacheCommand(Command):
+    """Flush all keys/values in redis cache, used for testing [OPTIONAL]"""
+
+    def prepare_parser(self, parser: argparse.ArgumentParser) -> None:
+        parser.add_argument("-fc", "--flush-cache", help=self.__doc__, action="store_true")
+
+
+class OverwriteCacheCommand(Command):
+    """Overwrite cache value if key exists in cache [OPTIONAL]"""
+
+    def prepare_parser(self, parser: argparse.ArgumentParser) -> None:
+        parser.add_argument("-oc", "--overwrite-cache", help=self.__doc__, action="store_true")
+
+
+class JsonCommand(Command):
+    """Print search results as json to stdout [OPTIONAL]"""
+
+    def prepare_parser(self, parser: argparse.ArgumentParser) -> None:
+        parser.add_argument("-j", "--json", help=self.__doc__, action="store_true")
+
+
 class GoogleSearch(Command):
     """Use google search instead of stack-exchange API for searching"""
 
@@ -121,13 +154,18 @@ _COMMANDS: list[Command] = [
     ConfigFileCommand(),
     VerboseLoggingCommand(),
     VersionCommand(),
+    OverwriteCacheCommand(),
+    FlushCacheCommand(),
+    JsonCommand(),
+    SetApiKeyCommand()
 ]
 
 
 def get_cmd_args() -> argparse.ArgumentParser:
     """Parse command line arguments"""
     parser = argparse.ArgumentParser(
-        description="Stack Exchange Command Line Search Client - search stack exchange websites in your terminal!"
+        description="Stack Exchange Command Line Search Client - search stack exchange websites in your terminal!",
+        epilog='Have fun searching!'
     )
 
     for command in _COMMANDS:

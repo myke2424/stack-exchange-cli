@@ -1,13 +1,14 @@
 import argparse
 import logging
 import os
+from pathlib import Path
+
 import yaml
 
 from .cache import RedisCache
 from .commands import get_cmd_args
 from .models import Config
 from .search import CachedStackExchange, Searchable, StackExchange
-from pathlib import Path
 
 
 class Singleton:
@@ -52,12 +53,12 @@ class App(Singleton):
         self.__logger.debug(self.__config)
 
     def _set_api_key(self) -> None:
-        """ Save api key to config.yaml """
-        with self.__config_file_path.open('r') as f:
+        """Save api key to config.yaml"""
+        with self.__config_file_path.open("r") as f:
             config = yaml.load(f, Loader=yaml.FullLoader)
-            config['api']['api_key'] = self.__args.set_key
+            config["api"]["api_key"] = self.__args.set_key
 
-        with self.__config_file_path.open('w') as f:
+        with self.__config_file_path.open("w") as f:
             yaml.dump(config, f)
 
     @property
@@ -86,8 +87,11 @@ class App(Singleton):
         If redis configuration is set in config.yaml, cache search requests with proxy object.
         """
         stack_exchange = StackExchange(self.config.api)
-        if self.config.redis.host and self.config.redis.port and self.config.redis.password:
+        if self.config.redis and self.config.redis.host and self.config.redis.port and self.config.redis.password:
             self.__logger.info("Using cached stack exchange service")
-            redis_db = RedisCache(**self.config.redis.__dict__)
-            return CachedStackExchange(cache=redis_db, stack_exchange_service=stack_exchange)
+            redis_db = RedisCache(**self.config.redis.__dict__, flush=self.args.flush_cache)
+
+            return CachedStackExchange(
+                cache=redis_db, stack_exchange_service=stack_exchange, overwrite=self.__args.overwrite_cache
+            )
         return stack_exchange
