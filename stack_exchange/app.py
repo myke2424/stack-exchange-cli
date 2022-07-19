@@ -1,11 +1,13 @@
 import argparse
 import logging
 import os
+import yaml
 
 from .cache import RedisCache
 from .commands import get_cmd_args
 from .models import Config
 from .search import CachedStackExchange, Searchable, StackExchange
+from pathlib import Path
 
 
 class Singleton:
@@ -28,20 +30,35 @@ class App(Singleton):
 
     def __init__(self) -> None:
         self.__args = get_cmd_args()
-        self.__config_file_path = self.__args.config or os.path.join(os.path.dirname(__file__), "../config.yaml")
-        self.__config = Config.from_yaml_file(self.__config_file_path)
+        _config_file_path = self.__args.config or os.path.join(os.path.dirname(__file__), "../config.yaml")
+        self.__config_file_path = Path(_config_file_path)
+        self.__config = Config.from_yaml_file(self.__config_file_path.absolute())
         self.__logger = logging.getLogger(__name__)
         self._setup()
 
     def _setup(self) -> None:
         self._configure_logger()
 
+        # use api-key passed in for requests
         if self.__args.key:
             self.__config.api.api_key = self.__args.key
 
+        if self.__args.set_key:
+            self._set_api_key()
+
         self.__logger.debug(f"Command Arguments: {self.__args}")
         self.__logger.debug(f"Using config file: {self.__config_file_path}")
+        self.__logger.debug(f"Using API Key: {self.__args.key}")
         self.__logger.debug(self.__config)
+
+    def _set_api_key(self) -> None:
+        """ Save api key to config.yaml """
+        with self.__config_file_path.open('r') as f:
+            config = yaml.load(f, Loader=yaml.FullLoader)
+            config['api']['api_key'] = self.__args.set_key
+
+        with self.__config_file_path.open('w') as f:
+            yaml.dump(config, f)
 
     @property
     def config(self) -> Config:

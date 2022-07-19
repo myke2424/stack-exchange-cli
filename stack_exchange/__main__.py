@@ -15,16 +15,16 @@ def main():
 
     search_request = (
         SearchRequest.Builder(app.args.query, site)
-        .with_tags(app.args.tags)
-        .accepted_only()
-        .n_results(app.args.num)
-        .sort_by(app.args.sortby)
-        .build()
+            .with_tags(app.args.tags)
+            .accepted_only()
+            .n_results(app.args.num)
+            .sort_by(app.args.sortby)
+            .build()
     )
 
     search_results = stack_exchange.search(search_request)
 
-    terminal = Terminal(interactive_search=app.args.interactive)
+    terminal = Terminal(interactive_search=app.args.interactive, jsonify=app.args.json)
     terminal.display(app.args.query, search_results)
 
 
