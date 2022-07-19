@@ -52,7 +52,8 @@ class StackExchange(Searchable):
 
         if response_dict.get("error_message") is not None:
             raise StackRequestError(
-                f"Request FAILED to url: {response.url} \nResponse Error Message: {response_dict['error_message']}")
+                f"Request FAILED to url: {response.url} \nResponse Error Message: {response_dict['error_message']}"
+            )
         return response_dict
 
     def _get_search_advanced(self, params: dict) -> dict:

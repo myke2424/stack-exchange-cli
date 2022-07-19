@@ -11,4 +11,4 @@ class RedisConnectionError(ConnectionError):
 
 
 class InvalidConfigurationError(ValueError):
-    """ Raise when user uses an invalid config.yaml file """
+    """Raise when user uses an invalid config.yaml file"""

@@ -157,7 +157,7 @@ _COMMANDS: list[Command] = [
     OverwriteCacheCommand(),
     FlushCacheCommand(),
     JsonCommand(),
-    SetApiKeyCommand()
+    SetApiKeyCommand(),
 ]
 
 
@@ -165,7 +165,7 @@ def get_cmd_args() -> argparse.ArgumentParser:
     """Parse command line arguments"""
     parser = argparse.ArgumentParser(
         description="Stack Exchange Command Line Search Client - search stack exchange websites in your terminal!",
-        epilog='Have fun searching!'
+        epilog="Have fun searching!",
     )
 
     for command in _COMMANDS:

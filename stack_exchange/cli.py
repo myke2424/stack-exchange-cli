@@ -1,10 +1,10 @@
 """ Terminal UI """
 
+import json
 import logging
 import os
 import sys
 import webbrowser
-import json
 from enum import Enum
 
 from rich import print as rprint

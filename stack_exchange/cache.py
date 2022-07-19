@@ -2,9 +2,9 @@ import json
 import logging
 from abc import ABC, abstractmethod
 from typing import Any
-from rich import print as rprint
 
 import redis
+from rich import print as rprint
 
 from .errors import RedisConnectionError
 
@@ -55,14 +55,14 @@ class RedisCache(Cache):
             try:
                 should_flush = input("Are you sure you want to flush the cache? Type 'y' for YES | 'n' for NO ")
                 print(should_flush)
-                if should_flush != 'n' and should_flush != 'y':
+                if should_flush != "n" and should_flush != "y":
                     raise ValueError
                 else:
                     break
             except ValueError:
                 rprint("[bold red]Please enter a valid value: 'y' or 'n'")
 
-        if should_flush == 'y':
+        if should_flush == "y":
             self.clear()
 
     def get(self, key: str) -> Any:

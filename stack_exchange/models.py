@@ -131,6 +131,7 @@ class StackResponseItem:
 @dataclass(frozen=True)
 class Question(StackResponseItem):
     """Model representation of a StackExchange Question"""
+
     question_id: int
     title: str
     link: str
@@ -208,9 +209,9 @@ class Config:
     def from_yaml_file(cls, file_path: str) -> "Config":
         config = utils.load_yaml_file(file_path)
 
-        api = config.get('api')
-        logging = config.get('logging')
-        redis = config.get('redis')
+        api = config.get("api")
+        logging = config.get("logging")
+        redis = config.get("redis")
 
         if api is None:
             raise InvalidConfigurationError("API version and default site must be set in config.yaml")
