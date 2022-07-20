@@ -155,7 +155,6 @@ If you use an api key, you will have a daily request limit of **10000**
 **Note**: You probably won't need an API key if you are a light-user.
 
 **From stack-exchange**: "Every application is subject to an IP based concurrent request throttle. If a single IP is making more than 30 requests a second, new requests will be dropped. The exact ban period is subject to change, but will be on the order of 30 seconds to a few minutes typically."
-It's recommended users don't modify the api version."
 
 
 ### Redis Configuration
