@@ -6,6 +6,8 @@ Search stack exchange websites in your terminal!
 
 With beautiful terminal formatting using Rich.
 
+All stack exchange websites available for searching: https://stackexchange.com/sites
+
 ![Demo](https://s1.gifyu.com/images/Recording-2022-07-17-at-18.39.33-4.gif)
 
 
@@ -36,7 +38,7 @@ Displays the highest up-voted question and top answer for your search request \
  
 
 ### Main Installation
-Just pip install it!
+Just pip install it! Fast and easy.
 
 ```bash
 python3.10 -m pip install stack-exchange-cli
@@ -112,7 +114,7 @@ Use the **-q** command followed by the search query and **-i** or **--interactiv
 ```bash
 se -q="BFS vs DFS" -i
 ```
-Interactive search allows the user to interact while searching, analogous to browsing stackoverflow questions in your browser, except in the terminal!
+Interactive search allows the user to interact while searching, analogous to browsing stack-exchange questions in your browser, except in the terminal!
 
 ### Run directly with python interpreter
 ```bash
@@ -136,20 +138,33 @@ python3.10 -m stack_exchange -q="BFS vs DFS"
 
 ## Configuration  <a name="config"></a>
 
-The application can be optionally configured using the `config.yaml` file in the root directory or by using the `-c` cmd argument to point it to a config file path.
+The application can be configured by using the `-c` cmd line argument to point it to a `yaml` config file path. 
+```bash
+se -q="DFS vs BFS" -c="/mnt/c/my_config_file.yaml"
+```
 
+**Note**: Most users won't need to configure the application, it's supposed to be easy to use out of the box! These are **optional** configuration settings the user can use. By default, the application will be packaged up with the `config.yaml` in the root directory.
 ### API Configuration
 
 Fill out yaml `api` values with a stack exchange `API key` to prevent **request throttling**. \
 Read more here:  https://api.stackexchange.com/docs/throttle
 
-You can get an API Key by **registering** as a new app from here: http://stackapps.com/apps/oauth/register
+You can get an API Key by **registering** as a new app from here: http://stackapps.com/apps/oauth/register \
+If you use an api key, you will have a daily request limit of **10000**
+
+**Note**: You probably won't need an API key if you are a light-user.
+
+**From stack-exchange**: "Every application is subject to an IP based concurrent request throttle. If a single IP is making more than 30 requests a second, new requests will be dropped. The exact ban period is subject to change, but will be on the order of 30 seconds to a few minutes typically."
+It's recommended users don't modify the api version."
+
 
 ### Redis Configuration
 
 Fill out yaml `redis` values with redis credentials if you want to hook up the application to a redis db for request caching.
 
 Speed benefits are minor, but it will help with being throttled as it will just read the cache instead of going over the network to the stack exchange API if you request the same thing more than once.
+
+There are also command line arguments for interfacing with the cache, i.e. overwrite values in the cache or flush the cache.
 
 This isn't needed but if you want to use the redis free tier, check out: https://redis.com/try-free/
 ### Logging configuration
