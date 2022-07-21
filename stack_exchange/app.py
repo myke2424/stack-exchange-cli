@@ -51,16 +51,12 @@ class App(Singleton):
         if self.__args.key:
             self.__config.api.api_key = self.__args.key
 
-        # if user passed in -sk flag, overwrite the key in config.yaml
-        if self.__args.set_key:
-            self._set_api_key()
-
         self.__logger.debug(f"Command Arguments: {self.__args}")
         self.__logger.debug(f"Using config file: {self.__config_file_path}")
         self.__logger.debug(f"Using API Key: {self.__args.key}")
         self.__logger.debug(self.__config)
 
-    def _set_api_key(self) -> None:
+    def set_api_key(self) -> None:
         """Save api key to config.yaml"""
         with self.__config_file_path.open("r") as f:
             config = yaml.load(f, Loader=yaml.FullLoader)

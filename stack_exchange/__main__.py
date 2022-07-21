@@ -29,6 +29,11 @@ def main():
         terminal.print_alias()
         sys.exit(0)
 
+    # if user passed in -sk flag, overwrite the key in config.yaml
+    if app.args.set_key:
+        app.set_api_key()
+        sys.exit(0)
+
     if app.args.query is None:
         print("Search requires a query string - please use the '-q' or '--query' argument")
         sys.exit(1)

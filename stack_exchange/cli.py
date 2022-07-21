@@ -107,7 +107,10 @@ class Terminal:
             self._print_result_titles(query, search_results)
             selected_result_idx = self._prompt_question_number_input(search_results)
             search_result = search_results[selected_result_idx]
-            self._print_result(search_result)
+            if self.__jsonify:
+                print(json.dumps([sr.to_json() for sr in search_results], indent=2))
+            else:
+                self._print_result(search_result)
 
             rprint(
                 f"\n[bold green]Enter [bold magenta]'q'[/bold magenta] to quit |  [bold magenta]'g'[/bold magenta] to go back to "
