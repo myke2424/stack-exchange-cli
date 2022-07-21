@@ -39,35 +39,13 @@ class Cache(ABC):
 
 
 class RedisCache(Cache):
-    def __init__(self, host: str, port: int, password: str, flush: bool = False) -> None:
+    def __init__(self, host: str, port: int, password: str) -> None:
         self.__db = redis.Redis(host=host, port=port, password=password)
-        self._flush = flush
-        self._setup()
-
-    def _setup(self) -> None:
         self._validate_connection()
-
-        if self._flush:
-            self._flush_prompt()
 
     def _validate_connection(self) -> None:
         if not self.__db.ping():
             raise RedisConnectionError("Failed to connect to Redis Database...")
-
-    def _flush_prompt(self) -> None:
-        while True:
-            try:
-                should_flush = input("Are you sure you want to flush the cache? Type 'y' for YES | 'n' for NO ")
-                print(should_flush)
-                if should_flush != "n" and should_flush != "y":
-                    raise ValueError
-                else:
-                    break
-            except ValueError:
-                rprint("[bold red]Please enter a valid value: 'y' or 'n'")
-
-        if should_flush == "y":
-            self.clear()
 
     def get(self, key: str) -> Any:
         logger.debug(f"Reading cache - key: {key}")
@@ -91,5 +69,5 @@ class RedisCache(Cache):
         self.__db.set(key, value)
 
     def clear(self) -> None:
-        logger.debug("FLUSHING REDIS DATABASE!!!")
+        logger.warning("FLUSHING REDIS DATABASE!!!")
         self.__db.flushdb()

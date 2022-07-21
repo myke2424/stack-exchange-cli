@@ -21,6 +21,10 @@ def main():
     terminal = Terminal(interactive_search=app.args.interactive, jsonify=app.args.json)
 
     # Client passed in command line arg '-a' to view the alias from cache - display it to the client and exit
+    if app.args.flush_cache:
+        terminal.flush_cache_prompt()
+        sys.exit(0)
+
     if app.args.alias:
         terminal.print_alias()
         sys.exit(0)

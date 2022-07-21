@@ -43,6 +43,8 @@ class Terminal:
         """Main interface to display terminal output and interaction"""
         if not self.__interactive_search:
             logger.info("Using fast-search...")
+
+            # Client uses the -j or --json cmd flag to dump search-results to stdout as json
             if self.__jsonify:
                 print(json.dumps([sr.to_json() for sr in search_results], indent=2))
             else:
@@ -69,6 +71,26 @@ class Terminal:
 
         logger.info(f"Printing alias: {alias} - cached search results to console")
         self._print_result(SearchResult.from_json(cached_search_result))
+
+    @staticmethod
+    def flush_cache_prompt() -> None:
+        """Prompt the user to flush the cache"""
+        while True:
+            try:
+                should_flush = input("Are you sure you want to flush the cache? Type 'y' for YES | 'n' for NO ")
+                if should_flush != "n" and should_flush != "y":
+                    raise ValueError
+                else:
+                    break
+            except ValueError:
+                rprint("[bold red]Please enter a valid value: 'y' or 'n'")
+
+        if should_flush == "y":
+            if App().redis_db is None:
+                raise InvalidConfigurationError(
+                    "Redis not configured in config.yaml... Failed to flush cache")
+            App().redis_db.clear()
+            rprint("[bold green]Cache has been flushed!")
 
     def _get_terminal_size(self) -> int:
         """Used to get size of terminal"""
