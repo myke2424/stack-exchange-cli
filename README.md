@@ -117,7 +117,6 @@ se -q="BFS vs DFS" -i
 ```
 Interactive search allows the user to interact while searching, analogous to browsing stack-exchange questions in your browser, except in the terminal!
 
-In interactive mode, you have the option to save the search result to a cache (if configured), to view for later.
 
 
 ### Run directly with python interpreter
