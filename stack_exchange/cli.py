@@ -154,7 +154,7 @@ class Terminal:
                         webbrowser.open(search_result.question.link)
                         continue
                     case UserCommand.GO_BACK:
-                        os.system('cls||clear')
+                        os.system("cls||clear")
                         break
                     case UserCommand.SAVE_TO_CACHE:
                         self._prompt_save_to_cache_alias(search_result)
