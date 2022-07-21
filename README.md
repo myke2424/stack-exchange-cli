@@ -8,7 +8,10 @@ With beautiful terminal formatting using Rich.
 
 All stack exchange websites available for searching: https://stackexchange.com/sites
 
+### Fast Search
 ![Fast search Demo](https://s1.gifyu.com/images/Recording-2022-07-17-at-18.39.33-4.gif)
+
+### Interactive Search
 ![Interactive search Demo](https://s4.gifyu.com/images/Recording-2022-07-21-at-11.33.13.gif)
 
 ## Table of Contents
