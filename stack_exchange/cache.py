@@ -1,9 +1,14 @@
+"""
+Module contains the cache interface as well as it's concrete implementation for the Redis Labs cache.
+"""
+
 import json
 import logging
 from abc import ABC, abstractmethod
 from typing import Any
 
 import redis
+from rich import print as rprint
 
 from .errors import RedisConnectionError
 
@@ -27,6 +32,11 @@ class Cache(ABC):
         """Set key with associated value in cache"""
         pass
 
+    @abstractmethod
+    def clear(self) -> None:
+        """Clear all keys/values in cache"""
+        pass
+
 
 class RedisCache(Cache):
     def __init__(self, host: str, port: int, password: str) -> None:
@@ -34,7 +44,6 @@ class RedisCache(Cache):
         self._validate_connection()
 
     def _validate_connection(self) -> None:
-        """Validate connection to Redis DB is working"""
         if not self.__db.ping():
             raise RedisConnectionError("Failed to connect to Redis Database...")
 
@@ -58,3 +67,7 @@ class RedisCache(Cache):
         if isinstance(value, (dict, list)):
             value = json.dumps(value)
         self.__db.set(key, value)
+
+    def clear(self) -> None:
+        logger.warning("FLUSHING REDIS DATABASE!!!")
+        self.__db.flushdb()

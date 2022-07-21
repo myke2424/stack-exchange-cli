@@ -1,6 +1,11 @@
+"""
+Module contains data classes that model some representation of data used throughout the application.
+"""
+
 from dataclasses import dataclass
 
 from . import utils
+from .errors import InvalidConfigurationError
 
 
 @dataclass(frozen=True)
@@ -24,7 +29,7 @@ class SearchRequest:
             "q": self.query,
             "site": self.site,
             "accepted": self.accepted,
-            "tags": self.tags,
+            "tagged": self.tags,
             "filter": self.filter,
             "sort": self.sort_by,
         }
@@ -40,6 +45,8 @@ class SearchRequest:
 
         Instead of forcing the caller to use keyword arguments and a complicated constructor,
         we can use the builder pattern to create a fluent API for building the request.
+
+        Clients can invoke any permutation of building methods as long as build() is called LAST!
         """
 
         def __init__(self, query: str, site: str) -> None:
@@ -87,7 +94,12 @@ class SearchRequest:
             return self
 
         def build(self) -> "SearchRequest":
-            """Build the SearchRequest object"""
+            """
+            Build the SearchRequest object
+            Callers must invoke this function LAST after chaining methods, i.e.
+
+            SearchRequest.Builder(query, site).accepted_only.with_tags("python").build() <--- CALLED LAST!
+            """
             request = {
                 "query": self.__query,
                 "tags": self.__tags,
@@ -105,7 +117,15 @@ class SearchRequest:
 class StackResponseItem:
     """
     Model representation of a StackExchange Response Item
-    Base class with common fields stack exchange entities can inherit, i.e. question, answer, comment */
+    All requests to the stack exchange api return a response in format:
+
+    {
+        'items': [{...}, {...}]
+    }
+
+    This class represents an item in that list ^, '...' is a placeholder to represent the fields
+
+    Used as a base class with common fields stack exchange entities can inherit, i.e. question, answer, comment
     """
 
     body: str
@@ -131,6 +151,7 @@ class StackResponseItem:
 class Question(StackResponseItem):
     """Model representation of a StackExchange Question"""
 
+    question_id: int
     title: str
     link: str
     accepted_answer_id: int
@@ -153,7 +174,10 @@ class SearchResult:
 
     @classmethod
     def from_json(cls, json_: dict) -> "SearchResult":
-        """Deserialize JSON to SearchResult obj"""
+        """
+        Alternate constructor to deserialize a search result in JSON format into a SearchResult obj
+        Used for deserializing values from the cache
+        """
         question, answer = Question(**json_["question"]), Answer(**json_["answer"])
         return cls(question, answer)
 
@@ -195,21 +219,36 @@ class LoggingConfig:
     log_level: str
 
 
-@dataclass
+@dataclass(frozen=True)
 class Config:
-    """Model representation of the application configuration settings"""
+    """
+    Model representation of the application configuration settings.
+    Application by default will use the 'config.yaml' file in the root directory.
+    Modify the fields in that file to tweak the behaviour of the application.
+    """
 
-    api: StackExchangeApiConfig | None
-    redis: RedisConfig | None
     logging: LoggingConfig
+    api: StackExchangeApiConfig
+    redis: RedisConfig | None = None
 
     @classmethod
     def from_yaml_file(cls, file_path: str) -> "Config":
         config = utils.load_yaml_file(file_path)
-        api, redis, logging = (
-            StackExchangeApiConfig(**config["api"]),
-            RedisConfig(**config["redis"]),
-            LoggingConfig(**config["logging"]),
-        )
 
-        return cls(api, redis, logging)
+        api = config.get("api")
+        logging = config.get("logging")
+        redis = config.get("redis")
+
+        if api is None:
+            raise InvalidConfigurationError("API version and default site must be set in config.yaml")
+
+        if logging is None:
+            raise InvalidConfigurationError("logging configuration must be set in config.yaml")
+
+        api = StackExchangeApiConfig(**api)
+        logging = LoggingConfig(**logging)
+
+        if redis is not None:
+            redis = RedisConfig(**config["redis"])
+
+        return cls(api=api, redis=redis, logging=logging)

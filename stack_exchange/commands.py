@@ -1,4 +1,11 @@
-""" Module that handles command line argument parsing """
+"""
+Module that handles command-line argument parsing
+
+The application uses command line arguments to dictate the behaviour, i.e, what to search, where to search,
+how many results do we need, how do we want to sort the results, etc.
+
+Use the -h or --help flag to see a list of all command line arguments
+"""
 
 import argparse
 from abc import ABC
@@ -12,10 +19,10 @@ class Command(ABC):
 
 
 class QueryCommand(Command):
-    """Search query used to search a stack exchange website [REQUIRED]"""
+    """Search query used to search a stack exchange website [REQUIRED FOR SEARCHING]"""
 
     def prepare_parser(self, parser: argparse.ArgumentParser) -> None:
-        parser.add_argument("-q", "--query", nargs="+", help=self.__doc__, required=True)
+        parser.add_argument("-q", "--query", nargs="+", help=self.__doc__)
 
 
 class SiteCommand(Command):
@@ -49,7 +56,7 @@ class NumCommand(Command):
     """Number of results to display when interactive searching [OPTIONAL]"""
 
     def prepare_parser(self, parser: argparse.ArgumentParser) -> None:
-        parser.add_argument("-n", "--num", help=self.__doc__, default=30, required=False)
+        parser.add_argument("-n", "--num", help=self.__doc__, default=30, type=int, required=False)
 
 
 class SortByCommand(Command):
@@ -73,6 +80,18 @@ class ApiKeyCommand(Command):
         parser.add_argument(
             "-k",
             "--key",
+            help=self.__doc__,
+            required=False,
+        )
+
+
+class SetApiKeyCommand(Command):
+    """Set stack exchange API key in config.yaml, to avoid repeating using -k search commands [OPTIONAL]"""
+
+    def prepare_parser(self, parser: argparse.ArgumentParser) -> None:
+        parser.add_argument(
+            "-sk",
+            "--set-key",
             help=self.__doc__,
             required=False,
         )
@@ -104,10 +123,32 @@ class VersionCommand(Command):
         parser.add_argument("-v", "--version", help=self.__doc__, action="version", version=__version__)
 
 
-class GoogleSearch(Command):
-    """Use google search instead of stack-exchange API for searching"""
+class FlushCacheCommand(Command):
+    """Flush all keys/values in redis cache, used for testing [OPTIONAL]"""
 
-    # TODO: Implement functionality
+    def prepare_parser(self, parser: argparse.ArgumentParser) -> None:
+        parser.add_argument("-fc", "--flush-cache", help=self.__doc__, action="store_true")
+
+
+class OverwriteCacheCommand(Command):
+    """Overwrite cache value if key exists in cache [OPTIONAL]"""
+
+    def prepare_parser(self, parser: argparse.ArgumentParser) -> None:
+        parser.add_argument("-oc", "--overwrite-cache", help=self.__doc__, action="store_true")
+
+
+class JsonCommand(Command):
+    """Print search results as json to stdout [OPTIONAL]"""
+
+    def prepare_parser(self, parser: argparse.ArgumentParser) -> None:
+        parser.add_argument("-j", "--json", help=self.__doc__, action="store_true")
+
+
+class ViewAliasCommand(Command):
+    """Used to view the cached search result under the specified alias [OPTIONAL]"""
+
+    def prepare_parser(self, parser: argparse.ArgumentParser) -> None:
+        parser.add_argument("-a", "--alias", help=self.__doc__, required=False)
 
 
 _COMMANDS: list[Command] = [
@@ -121,13 +162,19 @@ _COMMANDS: list[Command] = [
     ConfigFileCommand(),
     VerboseLoggingCommand(),
     VersionCommand(),
+    OverwriteCacheCommand(),
+    FlushCacheCommand(),
+    JsonCommand(),
+    SetApiKeyCommand(),
+    ViewAliasCommand(),
 ]
 
 
 def get_cmd_args() -> argparse.ArgumentParser:
     """Parse command line arguments"""
     parser = argparse.ArgumentParser(
-        description="Stack Exchange Command Line Search Client - search stack exchange websites in your terminal!"
+        description="Stack Exchange Command Line Search Client - search stack exchange websites in your terminal!",
+        epilog="Have fun searching!",
     )
 
     for command in _COMMANDS:

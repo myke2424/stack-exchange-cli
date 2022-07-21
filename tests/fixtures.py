@@ -17,12 +17,16 @@ class TestCache(Cache):
     def set(self, key, value):
         self.cache[key] = value
 
+    def clear(self):
+        self.cache.clear()
+
 
 class TestStackExchangeClient(Searchable):
     def search(self, request: SearchRequest) -> list[SearchResult]:
         """Test search interface for stack-exchange"""
         questions = [
             Question(
+                question_id=5,
                 body="Question body 1",
                 score=50,
                 creation_date=1,
@@ -31,6 +35,7 @@ class TestStackExchangeClient(Searchable):
                 accepted_answer_id=1,
             ),
             Question(
+                question_id=6,
                 body="Question body 2",
                 score=10,
                 creation_date=2,

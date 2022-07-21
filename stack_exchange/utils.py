@@ -1,3 +1,8 @@
+"""
+Module contains utility functions used throughout the application, they don't belong to any particular class.
+They're just stand-alone functions.
+"""
+
 import datetime
 from pathlib import Path
 

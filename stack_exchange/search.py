@@ -1,4 +1,8 @@
-""" Stack Exchange client used for searching. """
+"""
+Module contains the main API code for searching stack-exchange websites.
+Includes a stack-exchange wrapper class used for searching, as well as a
+proxy cache class, used for searching and caching the results of each search.
+"""
 
 import json
 import logging
@@ -14,19 +18,24 @@ logger = logging.getLogger(__name__)
 
 
 class Searchable(ABC):
+    """Defines a contract for classes that implement this, they must be able to search the stack exchange API!"""
+
     @abstractmethod
     def search(self, request: SearchRequest) -> list[SearchResult]:
         """Main interface used for searching a stack exchange website."""
 
 
 class StackExchange(Searchable):
-    """Wrapper class for the Stack Exchange API used for searching only"""
+    """
+    Wrapper class for the Stack Exchange API used for searching only!
+    By default, the application will use this class for searching IF REDIS DB CREDENTIALS ARE NOT SET IN config.yaml.
+    """
 
     _SEARCH_ENDPOINT = "/search/advanced"
     _ANSWERS_ENDPOINT = "/answers"
 
     def __init__(self, api_config: StackExchangeApiConfig | None = None) -> None:
-        self.__version = api_config.version or "2.3"
+        self.__version = api_config.version if api_config else "2.3"
         self.__api_config = api_config
         self.url = f"https://api.stackexchange.com/{self.__version}"
 
@@ -52,7 +61,8 @@ class StackExchange(Searchable):
 
         if response_dict.get("error_message") is not None:
             raise StackRequestError(
-                f"Request FAILED to url: {response.url} \nResponse Error Message: {response_dict['error_message']}")
+                f"Request FAILED to url: {response.url} \nResponse Error Message: {response_dict['error_message']}"
+            )
         return response_dict
 
     def _get_search_advanced(self, params: dict) -> dict:
@@ -99,20 +109,30 @@ class CachedStackExchange(Searchable):
     """
     Proxy structural design pattern.
     Use a cache as a proxy object to set and get search results for faster look up time.
+
+    If the user configures the application WITH Redis credentials (optional), the application will use this
+    CachedStackExchange class for searching. This proxy class will have a reference to a StackExchange object and will
+    implement the same search interface. When the client code calls search() on the proxy object, it will cache the
+    results of the search method on the StackExchange class, and return the cached results in the event of a cache hit.
     """
 
-    def __init__(self, stack_exchange_service: StackExchange, cache: Cache) -> None:
+    def __init__(self, stack_exchange_service: StackExchange, cache: Cache, overwrite: bool = False) -> None:
         self.cache = cache
         self.service = stack_exchange_service
+        self._overwrite = overwrite
 
     def _prepare_search_uri(self, search_params: dict) -> str:
-        """Prepare the search url to use it for the key when caching requests"""
+        """
+        Prepare the search url to use it for the key when caching requests
+        i.e key=https://api.stackexchange.com/2.3/search/advanced?q=DFS+vs+BFS&site=stackoverflow&accepted=True
+        """
         request = requests.Request(method="GET", url=self.service.search_url, params=search_params).prepare()
         return request.url
 
     def search(self, request: SearchRequest) -> list[SearchResult]:
         """
         Same interface for searching as the StackExchange service.
+
         Check for cached request value, return value if cache hit, otherwise invoke search on stack exchange service
         and return results
         """
@@ -120,14 +140,16 @@ class CachedStackExchange(Searchable):
 
         cached_search_results = self.cache.get(request_url)
 
-        if cached_search_results is not None:
+        # value is in the cache... no need to search stack-exchange, let's return it to the client.
+        if cached_search_results is not None and not self._overwrite:
             logger.info(f"Using cached results for url: {request_url}")
             return [SearchResult.from_json(sr_json) for sr_json in cached_search_results]
 
+        # since the value wasn't in the cache, let's search stack-exchange by invoking the stack-exchange search
         search_results = self.service.search(request)
         search_results_json = [sr.to_json() for sr in search_results]
 
-        # cache request URI as the key and serialized JSON list of search results the value.
+        # cache request URI as the key and serialized JSON list of the search results the value.
         self.cache.set(key=request_url, value=search_results_json)
 
         return search_results

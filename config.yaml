@@ -1,4 +1,4 @@
-# These are optional fields, if you don't provide an API key, the requests will be throttled
+# API Key is optional, if you don't provide an API key, the requests will be throttled
 # Read more here: https://api.stackexchange.com/docs | https://api.stackexchange.com/docs/throttle
 api:
   api_key: null
