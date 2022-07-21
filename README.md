@@ -65,6 +65,9 @@ sudo apt install python3.10 -y
 #### Windows
 Download from here: https://www.python.org/downloads/
 
+If you can't use 'se' after installing stack-exchange-cli via pip, ensure your Python310\Scripts is set in your PATH.
+You will recieve a warning to add to PATH when pip installing stack-exchange-cli.
+
 ### Alternative methods to install
 - Install the **requirements** file manually
 
