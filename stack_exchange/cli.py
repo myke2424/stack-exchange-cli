@@ -110,8 +110,8 @@ class Terminal:
             self._print_result(search_result)
 
             rprint(
-                f"\n[bold green]Enter [bold red]'q'[/bold red] to quit |  [bold red]'g'[/bold red] to go back to "
-                f"results | [bold red]'o'[/bold red] to open question in browser | [bold red]'s'[/bold red] Save to cache under an alias "
+                f"\n[bold green]Enter [bold magenta]'q'[/bold magenta] to quit |  [bold magenta]'g'[/bold magenta] to go back to "
+                f"results | [bold magenta]'o'[/bold magenta] to open question in browser | [bold magenta]'s'[/bold magenta] Save to cache under an alias "
             )
 
             self._command_input_handler(search_result)
@@ -165,7 +165,7 @@ class Terminal:
     @staticmethod
     def _print_result_titles(query: str, search_results: list[SearchResult]) -> None:
         """Print all the question titles from search results to the console"""
-        rprint(f"\n[bold green]Search results for query:[/bold green] [red]'{''.join(query)}'\n")
+        rprint(f"\n[bold green]Search results for query:[/bold green] [bold magenta]'{''.join(query)}'\n")
         for idx, result in enumerate(search_results):
             date = utils.epoch_time_to_datetime_str(result.question.creation_date)
             rprint(
