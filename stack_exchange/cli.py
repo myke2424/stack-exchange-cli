@@ -87,8 +87,7 @@ class Terminal:
 
         if should_flush == "y":
             if App().redis_db is None:
-                raise InvalidConfigurationError(
-                    "Redis not configured in config.yaml... Failed to flush cache")
+                raise InvalidConfigurationError("Redis not configured in config.yaml... Failed to flush cache")
             App().redis_db.clear()
             rprint("[bold green]Cache has been flushed!")
 
