@@ -116,17 +116,18 @@ class SearchRequest:
 @dataclass(frozen=True)
 class StackResponseItem:
     """
-     Model representation of a StackExchange Response Item
-     All requests to the stack exchange api return a response in format:
+    Model representation of a StackExchange Response Item
+    All requests to the stack exchange api return a response in format:
 
-     {
-         'items': [{...}, {...}]
-     }
+    {
+        'items': [{...}, {...}]
+    }
 
-     This class represents an item in that list ^, '...' is a placeholder to represent the fields
+    This class represents an item in that list ^, '...' is a placeholder to represent the fields
 
-     Used as a base class with common fields stack exchange entities can inherit, i.e. question, answer, comment
-     """
+    Used as a base class with common fields stack exchange entities can inherit, i.e. question, answer, comment
+    """
+
     body: str
     score: int
     creation_date: int

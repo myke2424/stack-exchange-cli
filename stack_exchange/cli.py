@@ -15,15 +15,19 @@ from rich.console import Console
 
 from . import utils
 from .models import Answer, Question, SearchResult
+from .app import App
+from .errors import InvalidConfigurationError
 
 logger = logging.getLogger(__name__)
 
 
 class UserCommand(Enum):
     """Enum to represent user input commands in interactive search mode"""
+
     OPEN_BROWSER = "o"
     GO_BACK = "g"
     QUIT = "q"
+    SAVE_TO_CACHE = "s"
 
 
 class Terminal:
@@ -47,6 +51,25 @@ class Terminal:
 
         self._interactive_search_handler(query, search_results)
 
+    def print_alias(self) -> None:
+        """Display cached search result to the console under the given alias passed in by cmd line argument '-a'"""
+        app = App()
+        alias = app.args.alias
+
+        rprint(f"\nFetching alias='{alias}' from cache")
+
+        if app.redis_db is None:
+            raise InvalidConfigurationError("Redis not configured in config.yaml... Failed to view alias in cache")
+
+        cached_search_result = app.redis_db.get(alias)
+
+        if cached_search_result is None:
+            rprint(f"[bold red]Alias: '{alias}' doesn't exist in cache... exiting")
+            sys.exit(1)
+
+        logger.info(f"Printing alias: {alias} - cached search results to console")
+        self._print_result(SearchResult.from_json(cached_search_result))
+
     def _get_terminal_size(self) -> int:
         """Used to get size of terminal"""
         try:
@@ -67,7 +90,7 @@ class Terminal:
 
             rprint(
                 f"\n[bold green]Enter [bold red]'q'[/bold red] to quit |  [bold red]'g'[/bold red] to go back to "
-                f"results | [bold red]'o'[/bold red] to open question in browser "
+                f"results | [bold red]'o'[/bold red] to open question in browser | [bold red]'s'[/bold red] Save to cache under an alias "
             )
 
             self._command_input_handler(search_result)
@@ -88,7 +111,18 @@ class Terminal:
         return selected_result_idx
 
     @staticmethod
-    def _command_input_handler(search_result: SearchResult) -> None:
+    def _prompt_save_to_cache_alias(search_result: SearchResult) -> None:
+        """Prompt the user for the alias used to save the search result in the cache, used in interactive mode"""
+        alias = input("Enter in an alias for the search result to save to the cache: ")
+        logger.debug(f"Setting alias={alias} for search result {search_result}")
+
+        if App().redis_db is None:
+            raise InvalidConfigurationError("Redis not configured in config.yaml... Failed to save alias to cache")
+
+        App().redis_db.set(alias, search_result.to_json())
+        rprint(f"[bold green]Saved search result under alias: {alias}")
+
+    def _command_input_handler(self, search_result: SearchResult) -> None:
         """Prompt user input for a command in interactive mode and handle the input"""
         while True:
             try:
@@ -100,6 +134,8 @@ class Terminal:
                         continue
                     case UserCommand.GO_BACK:
                         break
+                    case UserCommand.SAVE_TO_CACHE:
+                        self._prompt_save_to_cache_alias(search_result)
                     case UserCommand.QUIT:
                         sys.exit(0)
             except ValueError:

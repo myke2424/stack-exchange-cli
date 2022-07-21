@@ -19,10 +19,10 @@ class Command(ABC):
 
 
 class QueryCommand(Command):
-    """Search query used to search a stack exchange website [REQUIRED]"""
+    """Search query used to search a stack exchange website [REQUIRED FOR SEARCHING]"""
 
     def prepare_parser(self, parser: argparse.ArgumentParser) -> None:
-        parser.add_argument("-q", "--query", nargs="+", help=self.__doc__, required=True)
+        parser.add_argument("-q", "--query", nargs="+", help=self.__doc__)
 
 
 class SiteCommand(Command):
@@ -144,10 +144,11 @@ class JsonCommand(Command):
         parser.add_argument("-j", "--json", help=self.__doc__, action="store_true")
 
 
-class GoogleSearch(Command):
-    """Use google search instead of stack-exchange API for searching"""
+class ViewAliasCommand(Command):
+    """Used to view the cached search result under the specified alias [OPTIONAL]"""
 
-    # TODO: Implement functionality
+    def prepare_parser(self, parser: argparse.ArgumentParser) -> None:
+        parser.add_argument("-a", "--alias", help=self.__doc__, required=False)
 
 
 _COMMANDS: list[Command] = [
@@ -165,6 +166,7 @@ _COMMANDS: list[Command] = [
     FlushCacheCommand(),
     JsonCommand(),
     SetApiKeyCommand(),
+    ViewAliasCommand()
 ]
 
 
