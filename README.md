@@ -18,6 +18,7 @@ All stack exchange websites available for searching: https://stackexchange.com/s
 4. [Command Line Arguments](#cli-args)
 5. [Configuration](#config)
 6. [Testing](#testing)
+7. [TODO](#todo)
 
 ## How it works  <a name="how-it-works"></a>
 
@@ -116,6 +117,9 @@ se -q="BFS vs DFS" -i
 ```
 Interactive search allows the user to interact while searching, analogous to browsing stack-exchange questions in your browser, except in the terminal!
 
+In interactive mode, you have the option to save the search result to a cache (if configured), to view for later.
+
+
 ### Run directly with python interpreter
 ```bash
 python3.10 -m stack_exchange -q="BFS vs DFS"
@@ -129,7 +133,7 @@ python3.10 -m stack_exchange -q="BFS vs DFS"
 | -t | --tags | [*OPTIONAL*] Search tags (space-delimited) | se -q="Segmentation fault cause" -t="c c++" | N/A |
 | -i | --interactive | [*OPTIONAL*] Allow the user to interact while searching | se -q="Tree traversal" -i | False |
 | -n | --num | [*OPTIONAL*] [*INTERACTIVE ONLY*] Number of results to display | se -q="Segmentation fault cause" -i -n=20 | 30 |
-| -sb | --sortby | [*OPTIONAL*] [*INTERACTIVE ONLY*]  Method to sort the search results by  choices = ["votes", "creation", "relevance", "activity"] | se -q="Python memory" -sb="relevance" | "votes" |
+| -sb | --sortby | [*OPTIONAL*]  Method to sort the search results by  choices = ["votes", "creation", "relevance", "activity"] | se -q="Python memory" -sb="relevance" | "votes" |
 | -vv | --verbose | [*OPTIONAL*] Verbose logging flag, set log level to DEBUG | se -q="Dictionary internals" -vv | False |
 | -c | --config | [*OPTIONAL*] config.yaml file path to use for  API, Redis and logging settings | se -q="Directed graph" -c="/mnt/c/config.yaml" | N/A |
 | -k | --key | [*OPTIONAL*] Use stack exchange API key for requests | se -q="Min heap vs max heap" -k="12345" | N/A |
@@ -200,3 +204,6 @@ Run tests using pytest
 ```bash
 python3.10 -m pytest
 ```
+
+## TODO <a name="todo"></a>
+Refactor CLI to use https://github.com/Textualize/textual for interactive search
