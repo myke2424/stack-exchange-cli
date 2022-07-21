@@ -1,3 +1,8 @@
+"""
+Module contains data classes that model some representation of data used throughout the application.
+"""
+
+
 from dataclasses import dataclass
 
 from . import utils

@@ -1,3 +1,12 @@
+"""
+Main file to run the application
+
+TO RUN THE APPLICATION, DO NOT RUN THIS FILE DIRECTLY, IT WILL NOT WORK DUE TO RELATIVE PACKAGE IMPORTS!
+
+Instead, run the following command in the root directory: python3.10 -m stack_exchange <commands>
+"""
+
+
 import sys
 
 from rich import print as rprint

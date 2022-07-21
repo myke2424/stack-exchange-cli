@@ -1,4 +1,7 @@
-""" Terminal UI """
+"""
+Module contains the application code that displays the UI to the client via the terminal.
+It's also responsible for handling any user input.
+"""
 
 import json
 import logging

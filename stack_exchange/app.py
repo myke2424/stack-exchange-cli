@@ -1,3 +1,7 @@
+"""
+Module contains the App class which is responsible for storing all application configuration and performing any setup required.
+"""
+
 import argparse
 import logging
 import os
@@ -35,15 +39,19 @@ class App(Singleton):
         self.__config_file_path = Path(_config_file_path)
         self.__config = Config.from_yaml_file(self.__config_file_path.absolute())
         self.__logger = logging.getLogger(__name__)
+        self.__redis_db = None
         self._setup()
 
     def _setup(self) -> None:
+        """Run any setup required for the application"""
         self._configure_logger()
+        self._configure_redis()
 
         # use api-key passed in for requests
         if self.__args.key:
             self.__config.api.api_key = self.__args.key
 
+        # if user passed in -sk flag, overwrite the key in config.yaml
         if self.__args.set_key:
             self._set_api_key()
 
@@ -62,20 +70,38 @@ class App(Singleton):
             yaml.dump(config, f)
 
     @property
+    def redis_db(self) -> RedisCache:
+        """Read-only reference to redis cache"""
+        return self.__redis_db
+
+    @property
     def config(self) -> Config:
+        """Read-only reference to application config"""
         return self.__config
 
     @property
     def args(self) -> argparse.ArgumentParser:
+        """Read-only reference to command-line arguments"""
         return self.__args
 
+    def _configure_redis(self) -> None:
+        """Setup redis database connection if it's configured in config.yaml"""
+        if self.config.redis and self.config.redis.host and self.config.redis.port and self.config.redis.password:
+            self.__redis_db = RedisCache(**self.config.redis.__dict__)
+
     def _configure_logger(self) -> None:
+        """
+        Configure the application logger
+        Log configuration can be tweaked via config.yaml (i.e. log to file/log-level)
+        """
         log_level = self.config.logging.log_level
         handlers = [logging.StreamHandler()]
 
         if self.config.logging.log_to_file:
             handlers.append(logging.FileHandler(self.config.logging.log_filename))
 
+        # If the client uses the cmd-line argument '-v', verbose logging will be enabled
+        # this will take precedence over the logging configuration set in config.yaml
         if self.args.verbose:
             log_level = logging.DEBUG
 
@@ -83,15 +109,16 @@ class App(Singleton):
 
     def get_stack_exchange_service(self) -> Searchable:
         """
-        Get stack exchange object used for searching.
-        If redis configuration is set in config.yaml, cache search requests with proxy object.
+        Get the stack exchange object used for searching.
+        If redis configuration is set in config.yaml, use the proxy object CachedStackExchange for searching and
+        caching search requests.
         """
         stack_exchange = StackExchange(self.config.api)
-        if self.config.redis and self.config.redis.host and self.config.redis.port and self.config.redis.password:
+
+        if self.redis_db is not None:
             self.__logger.info("Using cached stack exchange service")
-            redis_db = RedisCache(**self.config.redis.__dict__, flush=self.args.flush_cache)
 
             return CachedStackExchange(
-                cache=redis_db, stack_exchange_service=stack_exchange, overwrite=self.__args.overwrite_cache
+                cache=self.redis_db, stack_exchange_service=stack_exchange, overwrite=self.__args.overwrite_cache
             )
         return stack_exchange

@@ -1,4 +1,9 @@
-""" Stack Exchange client used for searching. """
+"""
+Module contains the main API code for searching stack-exchange websites.
+Includes a stack-exchange wrapper class used for searching, as well as a
+proxy cache class, used for searching and caching the results of each search.
+"""
+
 
 import json
 import logging

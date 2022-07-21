@@ -1,4 +1,11 @@
-""" Module that handles command line argument parsing """
+"""
+Module that handles command-line argument parsing
+
+The application uses command line arguments to dictate the behaviour, i.e, what to search, where to search,
+how many results do we need, how do we want to sort the results, etc.
+
+Use the -h or --help flag to see a list of all command line arguments
+"""
 
 import argparse
 from abc import ABC

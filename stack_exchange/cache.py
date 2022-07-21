@@ -1,3 +1,7 @@
+"""
+Module contains the cache interface as well as it's concrete implementation for the Redis Labs cache.
+"""
+
 import json
 import logging
 from abc import ABC, abstractmethod
