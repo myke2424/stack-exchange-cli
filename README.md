@@ -122,20 +122,24 @@ python3.10 -m stack_exchange -q="BFS vs DFS"
 ```
 
 ## Command Line Arguments  <a name="cli-args"></a>
-| Short | Long | Description | Example                                        | Default |
-|---|---|---|------------------------------------------------|---|
-| -q | --query | [*REQUIRED*] Search query | se -q="How to merge two dictionaries"          | N/A |
-| -s | --site | [*OPTIONAL*] Stack Exchange website to search on View all sites here: (https://stackexchange.com/sites) | se -q="Big O" -s="softwareengineering"         | "stackoverflow" |
-| -t | --tags | [*OPTIONAL*] Search tags (space-delimited) | se -q="Segmentation fault cause" -t="c c++"    | N/A |
-| -i | --interactive | [*OPTIONAL*] Allow the user to interact while searching | se -q="Tree traversal" -i                      | False |
-| -n | --num | [*OPTIONAL*] Number of results to display when  interactive searching, must be used with -i | se -q="Segmentation fault cause" -i -n=20      | 30 |
-| -sb | --sortby | [*OPTIONAL*] Method to sort the search results by  choices = ["votes", "creation", "relevance", "activity"] | se -q="Python memory" -sb="relevance"          | "votes" |
-| -vv | --verbose | [*OPTIONAL*] Verbose logging flag, set log level to DEBUG | se -q="Dictionary internals" -vv               | False |
+| Short | Long | Description | Example | Default |
+|---|---|---|---|---|
+| -q | --query | [*REQUIRED FOR SEARCH*] Search query | se -q="How to merge two dictionaries" | N/A |
+| -s | --site | [*OPTIONAL*] Stack Exchange website to search on View all sites here: (https://stackexchange.com/sites) | se -q="Big O" -s="softwareengineering" | "stackoverflow" |
+| -t | --tags | [*OPTIONAL*] Search tags (space-delimited) | se -q="Segmentation fault cause" -t="c c++" | N/A |
+| -i | --interactive | [*OPTIONAL*] Allow the user to interact while searching | se -q="Tree traversal" -i | False |
+| -n | --num | [*OPTIONAL*] [*INTERACTIVE ONLY*] Number of results to display | se -q="Segmentation fault cause" -i -n=20 | 30 |
+| -sb | --sortby | [*OPTIONAL*] [*INTERACTIVE ONLY*]  Method to sort the search results by  choices = ["votes", "creation", "relevance", "activity"] | se -q="Python memory" -sb="relevance" | "votes" |
+| -vv | --verbose | [*OPTIONAL*] Verbose logging flag, set log level to DEBUG | se -q="Dictionary internals" -vv | False |
 | -c | --config | [*OPTIONAL*] config.yaml file path to use for  API, Redis and logging settings | se -q="Directed graph" -c="/mnt/c/config.yaml" | N/A |
-| -k | --key | [*OPTIONAL*] Use stack exchange API key for requests | se -q="Min heap vs max heap" -k="12345"        | N/A |
-| -h | --help | [*OPTIONAL*] Displays help text  | se -h                                          | N/A |
-| -v | --version | [*OPTIONAL*] Displays version number | se -v                                          | N/A |
-
+| -k | --key | [*OPTIONAL*] Use stack exchange API key for requests | se -q="Min heap vs max heap" -k="12345" | N/A |
+| -sk | --set-key | [*OPTIONAL*] Set stack exchange API key in config.yaml, to avoid repeating using -k in search commands  | se -sk="12345" | N/A |
+| -fc | --flush-cache | [*OPTIONAL*] Flush all keys/values in redis cache | se -fc | False |
+| -oc | --overwrite-cache | [*OPTIONAL*] Overwrite cache value if key exists | se -q="DFS vs BFS" -oc | False |
+| -j | --json | [*OPTIONAL*] Print search results as json to stdout | se -q="DFS vs BFS" -j | False |
+| -a | --alias | [*OPTIONAL*] View the cached search result under the specified alias | se -a ="my_alias_i_saved_my_search_result" | N/A |
+| -h | --help | [*OPTIONAL*] Displays help text  | se -h | N/A |
+| -v | --version | [*OPTIONAL*] Displays version number | se -v | N/A |
 ## Configuration  <a name="config"></a>
 
 The application can be configured by using the `-c` cmd line argument to point it to a `yaml` config file path. 
