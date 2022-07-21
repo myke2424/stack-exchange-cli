@@ -2,7 +2,7 @@
 # Read more here: https://api.stackexchange.com/docs | https://api.stackexchange.com/docs/throttle
 api:
   api_key: null
-  default_site: "stackoverflow" 
+  default_site: "stackoverflow"
   version: 2.3
 
 # These are optional fields as well, if you want request caching you can hook the application up to a redis DB.
