@@ -166,7 +166,7 @@ _COMMANDS: list[Command] = [
     FlushCacheCommand(),
     JsonCommand(),
     SetApiKeyCommand(),
-    ViewAliasCommand()
+    ViewAliasCommand(),
 ]
 
 

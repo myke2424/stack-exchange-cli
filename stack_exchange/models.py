@@ -29,7 +29,7 @@ class SearchRequest:
             "q": self.query,
             "site": self.site,
             "accepted": self.accepted,
-            "tags": self.tags,
+            "tagged": self.tags,
             "filter": self.filter,
             "sort": self.sort_by,
         }

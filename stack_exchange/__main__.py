@@ -36,11 +36,11 @@ def main():
 
     search_request = (
         SearchRequest.Builder(app.args.query, site)
-            .with_tags(app.args.tags)
-            .accepted_only()
-            .n_results(app.args.num)
-            .sort_by(app.args.sortby)
-            .build()
+        .with_tags(app.args.tags)
+        .accepted_only()
+        .n_results(app.args.num)
+        .sort_by(app.args.sortby)
+        .build()
     )
 
     search_results = stack_exchange.search(search_request)

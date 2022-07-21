@@ -14,9 +14,9 @@ from rich import print as rprint
 from rich.console import Console
 
 from . import utils
-from .models import Answer, Question, SearchResult
 from .app import App
 from .errors import InvalidConfigurationError
+from .models import Answer, Question, SearchResult
 
 logger = logging.getLogger(__name__)
 
