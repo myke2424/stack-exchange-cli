@@ -2,6 +2,7 @@
 Module contains custom Exceptions used throughout the application for more fine-grained error messages and tracebacks.
 """
 
+
 class StackRequestError(IOError):
     """Raise exception when an error occurred when making a request to the StackExchange API"""
 

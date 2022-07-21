@@ -20,6 +20,7 @@ logger = logging.getLogger(__name__)
 
 
 class UserCommand(Enum):
+    """Enum to represent user input commands in interactive search mode"""
     OPEN_BROWSER = "o"
     GO_BACK = "g"
     QUIT = "q"
@@ -31,7 +32,7 @@ class Terminal:
     def __init__(self, interactive_search: bool, jsonify: bool = False) -> None:
         self.__console = Console()
         self.__interactive_search = interactive_search
-        self.__terminal_size = os.get_terminal_size()
+        self.__terminal_size = self._get_terminal_size()
         self.__jsonify = jsonify
 
     def display(self, query: str, search_results: list[SearchResult]) -> None:
@@ -45,6 +46,16 @@ class Terminal:
             sys.exit(0)
 
         self._interactive_search_handler(query, search_results)
+
+    def _get_terminal_size(self) -> int:
+        """Used to get size of terminal"""
+        try:
+            terminal_size = os.get_terminal_size()
+            return terminal_size.columns
+            # some IDEs (PyCharm) will raise this exception when getting terminal size
+        except OSError:
+            logger.debug("Using default terminal size...")
+            return 75
 
     def _interactive_search_handler(self, query: str, search_results: list[SearchResult]) -> None:
         """Handle user input and display results to console for interactive mode"""
@@ -106,22 +117,24 @@ class Terminal:
         print("\n")
 
     def _print_question(self, question: Question) -> None:
-        rprint("[bold green]-" * self.__terminal_size.columns)
+        """Print the search result question to the terminal using rich formatting"""
+        rprint("[bold green]-" * self.__terminal_size)
         date = utils.epoch_time_to_datetime_str(question.creation_date)
         self.__console.print(
             utils.html_to_markdown(f"<h1>Question | {date} | {question.score} votes</h1>"), style="green"
         )
         rprint(f"\n[bold red][bold green]{question.title} \n")
         self.__console.print(utils.html_to_markdown(question.body))
-        rprint("[bold green]-" * self.__terminal_size.columns)
+        rprint("[bold green]-" * self.__terminal_size)
 
     def _print_answer(self, answer: Answer) -> None:
-        rprint("[bold blue]-" * self.__terminal_size.columns)
+        """Print the search result answer to the format using rich formatting"""
+        rprint("[bold blue]-" * self.__terminal_size)
         date = utils.epoch_time_to_datetime_str(answer.creation_date)
         self.__console.print(utils.html_to_markdown(f"<h1>Answer | {date} | {answer.score} votes</h1>"), style="blue")
         print("\n")
         self.__console.print(utils.html_to_markdown(answer.body))
-        rprint("[bold blue]-" * self.__terminal_size.columns)
+        rprint("[bold blue]-" * self.__terminal_size)
 
     def _print_result(self, search_result: SearchResult) -> None:
         """Pretty print a search result to the console using Rich Formatting"""
