@@ -4,16 +4,32 @@ from unittest.mock import Mock, create_autospec
 import pytest
 import redis
 
-from stack_exchange.cache import RedisCache
+from stack_exchange.cache import Cache, RedisCache
 from stack_exchange.models import Answer, Question, SearchRequest, SearchResult
 from stack_exchange.search import CachedStackExchange, StackExchange
+
+
+class _TestCacheStub(Cache):
+    """In memory dict to simulate a cache"""
+
+    def __init__(self):
+        self.cache = {}
+
+    def get(self, key):
+        return self.cache.get(key)
+
+    def set(self, key, value):
+        self.cache[key] = value
+
+    def clear(self):
+        self.cache.clear()
 
 
 @pytest.fixture
 def redis_cache(mock_redis_db):
     host, port, password = "redis-notarealhost.redislabs.com", 12345, "fakepassword"
-    redis_cache = RedisCache(host=host, port=port, password=password, db=mock_redis_db)
-    yield redis_cache
+    cache = RedisCache(host=host, port=port, password=password, db=mock_redis_db)
+    yield cache
 
 
 @pytest.fixture
@@ -35,8 +51,8 @@ def stack_exchange_obj(stack_search_response, stack_get_answers_response):
 
 
 @pytest.fixture
-def cached_stack_exchange_obj(stack_exchange_obj, redis_cache):
-    return CachedStackExchange(stack_exchange_service=stack_exchange_obj, cache=redis_cache)
+def cached_stack_exchange_obj(stack_exchange_obj):
+    yield CachedStackExchange(stack_exchange_service=stack_exchange_obj, cache=_TestCacheStub())
 
 
 @pytest.fixture

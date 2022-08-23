@@ -1,8 +1,10 @@
-from unittest.mock import Mock
+from unittest.mock import MagicMock, Mock, patch
 
 import pytest
 
+from stack_exchange import exceptions
 from stack_exchange.models import Answer, Question, SearchResult
+from stack_exchange.search import StackExchange
 
 from .fixtures import (
     cached_stack_exchange_obj,
@@ -12,6 +14,22 @@ from .fixtures import (
     stack_get_answers_response,
     stack_search_response,
 )
+
+
+@patch("stack_exchange.search.requests", autospec=True)
+def test_search_invalid_get_requests_raises_stack_request_exception(mock_requests, search_request):
+    se = StackExchange()
+    mock_response = MagicMock(status_code=404)
+    mock_response.json.return_value = {
+        "error_id": 404,
+        "error_message": "no method found with this name",
+        "error_name": "no_method",
+    }
+
+    mock_requests.get.return_value = mock_response
+
+    with pytest.raises(exceptions.StackRequestError):
+        se.search(search_request)
 
 
 @pytest.mark.parametrize("num, questions_expected_len", [(5, 5), (10, 10), (1, 1)])
@@ -46,6 +64,19 @@ def test_search(stack_exchange_obj, search_request, stack_search_response, stack
     assert question_accepted_answer_ids == answer_ids
 
 
+def test_cached_search_cache_hit(cached_stack_exchange_obj, search_request, search_results_list):
+    """Tests the results are fetched from the cache for the same request instead of making repeated API called to stack-exchange"""
+
+    # mock stack exchange search api call
+    cached_stack_exchange_obj.service.search = Mock(return_value=search_results_list)
+
+    for _ in range(10):
+        cached_stack_exchange_obj.search(search_request)
+
+    # assert stack api service is only called ONCE for the same request
+    cached_stack_exchange_obj.service.search.assert_called_once()
+
+
 def test_cached_search(cached_stack_exchange_obj, search_request, stack_search_response, stack_get_answers_response):
     """Tests caching proxy objects caches search request and returns it for subsequent calls"""
     # unique request url used for our search and stored in the cache as the key
@@ -55,18 +86,6 @@ def test_cached_search(cached_stack_exchange_obj, search_request, stack_search_r
 
     assert search_results == cached_search_results
     assert cached_stack_exchange_obj.cache.get(request_url) is not None
-
-
-def test_cached_search_cache_hit(cached_stack_exchange_obj, search_request, search_results_list):
-    """Tests the results are fetched from the cache for the same request instead of making repeated API called to stack-exchange"""
-
-    # mock stack exchange search api call
-    cached_stack_exchange_obj.service.search = Mock(return_value=search_results_list)
-    for _ in range(10):
-        cached_stack_exchange_obj.search(search_request)
-
-    # assert stack api service is only called ONCE for the same request
-    cached_stack_exchange_obj.service.search.assert_called_once()
 
 
 def test_search_results_serialization_and_deserialization(search_results_list):
