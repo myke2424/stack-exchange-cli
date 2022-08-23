@@ -1,15 +1,17 @@
-from .fixtures import (
-    stack_exchange_obj,
-    search_request,
-    stack_search_response,
-    stack_get_answers_response,
-    cached_stack_exchange_obj,
-    search_results_list,
-)
-
 from unittest.mock import Mock
-from stack_exchange.models import Question, Answer, SearchResult
+
 import pytest
+
+from stack_exchange.models import Answer, Question, SearchResult
+
+from .fixtures import (
+    cached_stack_exchange_obj,
+    search_request,
+    search_results_list,
+    stack_exchange_obj,
+    stack_get_answers_response,
+    stack_search_response,
+)
 
 
 @pytest.mark.parametrize("num, questions_expected_len", [(5, 5), (10, 10), (1, 1)])
