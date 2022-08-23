@@ -35,8 +35,8 @@ def stack_exchange_obj(stack_search_response, stack_get_answers_response):
 
 
 @pytest.fixture
-def cached_stack_exchange_obj(stack_exchange_obj):
-    return CachedStackExchange(stack_exchange_service=stack_exchange_obj, cache=_TestCacheStub())
+def cached_stack_exchange_obj(stack_exchange_obj, redis_cache):
+    return CachedStackExchange(stack_exchange_service=stack_exchange_obj, cache=redis_cache)
 
 
 @pytest.fixture
