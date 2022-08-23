@@ -1,6 +1,5 @@
 import pathlib
 from unittest.mock import mock_open, patch
-
 import pytest
 
 from stack_exchange import utils
@@ -36,9 +35,3 @@ def test_html_to_markdown():
     markdown = utils.html_to_markdown(html)
 
     assert markdown.markup == expected
-
-
-def test_epoch_time_to_datetime():
-    epoch_timestamp = 1235349008
-    expected = "2009-02-22"
-    assert utils.epoch_time_to_datetime_str(epoch_timestamp) == expected
