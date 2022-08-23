@@ -1,5 +1,6 @@
 import pathlib
 from unittest.mock import mock_open, patch
+
 import pytest
 
 from stack_exchange import utils
