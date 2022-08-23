@@ -5,7 +5,7 @@ Module contains data classes that model some representation of data used through
 from dataclasses import dataclass
 
 from . import utils
-from .errors import InvalidConfigurationError
+from .exceptions import InvalidConfigurationError
 
 
 @dataclass(frozen=True)

@@ -11,7 +11,7 @@ from abc import ABC, abstractmethod
 import requests
 
 from .cache import Cache
-from .errors import StackRequestError, ZeroSearchResultsError
+from .exceptions import StackRequestError, ZeroSearchResultsError
 from .models import Answer, Question, SearchRequest, SearchResult, StackExchangeApiConfig
 
 logger = logging.getLogger(__name__)

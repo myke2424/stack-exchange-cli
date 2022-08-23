@@ -15,7 +15,7 @@ from rich.console import Console
 
 from . import utils
 from .app import App
-from .errors import InvalidConfigurationError
+from .exceptions import InvalidConfigurationError
 from .models import Answer, Question, SearchResult
 
 logger = logging.getLogger(__name__)
