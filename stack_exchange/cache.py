@@ -8,9 +8,8 @@ from abc import ABC, abstractmethod
 from typing import Any
 
 import redis
-from rich import print as rprint
 
-from .errors import RedisConnectionError
+from .exceptions import RedisConnectionError
 
 logger = logging.getLogger(__name__)
 
@@ -39,8 +38,8 @@ class Cache(ABC):
 
 
 class RedisCache(Cache):
-    def __init__(self, host: str, port: int, password: str) -> None:
-        self.__db = redis.Redis(host=host, port=port, password=password)
+    def __init__(self, host: str, port: int, password: str, db=redis.Redis) -> None:
+        self.__db = db(host=host, port=port, password=password)
         self._validate_connection()
 
     def _validate_connection(self) -> None:
