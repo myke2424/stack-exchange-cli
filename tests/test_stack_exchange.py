@@ -6,15 +6,6 @@ from stack_exchange import exceptions
 from stack_exchange.models import Answer, Question, SearchResult
 from stack_exchange.search import StackExchange
 
-from .fixtures import (
-    cached_stack_exchange_obj,
-    search_request,
-    search_results_list,
-    stack_exchange_obj,
-    stack_get_answers_response,
-    stack_search_response,
-)
-
 
 @patch("stack_exchange.search.requests", autospec=True)
 def test_search_invalid_get_requests_raises_stack_request_exception(mock_requests, search_request):

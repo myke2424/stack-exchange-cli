@@ -170,7 +170,7 @@ _COMMANDS: list[Command] = [
 ]
 
 
-def get_cmd_args() -> argparse.ArgumentParser:
+def get_cmd_args() -> argparse.Namespace:
     """Parse command line arguments"""
     parser = argparse.ArgumentParser(
         description="Stack Exchange Command Line Search Client - search stack exchange websites in your terminal!",
